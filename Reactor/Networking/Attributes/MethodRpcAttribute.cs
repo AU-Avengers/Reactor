@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BepInEx.Unity.Mono;
+using BepInEx.Unity.Mono.Bootstrap;
 using HarmonyLib;
 using Hazel;
 using Reactor.Networking.Rpc;
@@ -84,6 +85,9 @@ public sealed class MethodRpcAttribute : Attribute
 
     internal static void Initialize()
     {
-        UnityChainloader.Instance.PluginLoad += (_, assembly, plugin) => Register(assembly, plugin);
+        PluginLoadHooks.PluginLoaded += (_, plugin) =>
+        {
+            Register(plugin.GetType().Assembly, plugin);
+        };
     }
 }

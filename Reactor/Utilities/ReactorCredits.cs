@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Unity.Mono;
+using BepInEx.Unity.Mono.Bootstrap;
 using Reactor.Patches;
 using Reactor.Utilities.Extensions;
 

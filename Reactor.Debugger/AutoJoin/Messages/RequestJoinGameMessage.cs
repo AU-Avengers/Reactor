@@ -2,9 +2,9 @@ using System.IO;
 
 namespace Reactor.Debugger.AutoJoin.Messages;
 
-internal readonly record struct RequestJoinGameMessage : IMessage<RequestJoinGameMessage>
+internal readonly struct RequestJoinGameMessage : IMessage
 {
-    public static MessageType Type => MessageType.RequestJoinGame;
+    public MessageType Type => MessageType.RequestJoinGame;
 
     public void Serialize(BinaryWriter writer)
     {

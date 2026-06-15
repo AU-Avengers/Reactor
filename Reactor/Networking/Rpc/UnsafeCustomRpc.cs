@@ -6,7 +6,6 @@ using Hazel;
 using Hazel.Udp;
 using InnerNet;
 using Reactor.Utilities;
-using Buffer = UnitySystem.Buffer;
 
 namespace Reactor.Networking.Rpc;
 
@@ -95,7 +94,10 @@ public abstract class UnsafeCustomRpc
     /// <param name="ackCallback">The callback to invoke when this packet is acknowledged.</param>
     public void UnsafeSend(InnerNetObject innerNetObject, object? data, bool immediately = false, int targetClientId = -1, Action? ackCallback = null)
     {
-        ArgumentNullException.ThrowIfNull(innerNetObject);
+        if (innerNetObject == null)
+        {
+            throw new ArgumentNullException(nameof(innerNetObject));
+        }
 
         if (Manager == null)
         {
@@ -150,13 +152,13 @@ public abstract class UnsafeCustomRpc
 
             if (msg.SendOption == SendOption.Reliable && AckCallbacks.TryRemove(msg, out var ackCallback))
             {
-                var buffer = new UnityStructArray<byte>(msg.Length);
-                Buffer.BlockCopy(new UnitySystem.Array(msg.Buffer.Pointer), 0, new UnitySystem.Array(buffer.Pointer), 0, msg.Length);
+                var buffer = __instance.bufferPool.GetObject();
+                buffer.CopyFrom(msg, true);
 
                 __instance.ResetKeepAliveTimer();
 
-                __instance.AttachReliableID(buffer, 1, ackCallback);
-                __instance.WriteBytesToConnection(buffer, buffer.Length);
+                __instance.AttachReliableID(buffer, 1, msg.Length, ackCallback);
+                __instance.WriteBytesToConnection(buffer, msg.Length);
 
                 return false;
             }

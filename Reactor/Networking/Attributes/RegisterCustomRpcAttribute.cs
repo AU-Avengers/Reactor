@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using BepInEx.Unity.Mono;
+using BepInEx.Unity.Mono.Bootstrap;
 using HarmonyLib;
 using Reactor.Networking.Rpc;
 using Reactor.Utilities;
@@ -60,6 +61,9 @@ public sealed class RegisterCustomRpcAttribute : Attribute
 
     internal static void Initialize()
     {
-        UnityChainloader.Instance.PluginLoad += (_, assembly, plugin) => Register(assembly, plugin);
+        PluginLoadHooks.PluginLoaded += (_, plugin) =>
+        {
+            Register(plugin.GetType().Assembly, plugin);
+        };
     }
 }

@@ -15,11 +15,11 @@ public partial class DebuggerPlugin : BaseUnityPlugin
 {
     public Harmony Harmony { get; } = new(Id);
 
-    public override void Load()
+    private void Awake()
     {
         DebuggerConfig.Bind(Config);
 
-        this.AddComponent<DebuggerWindow>();
+        gameObject.AddComponent<DebuggerWindow>();
 
         GameOptionsPatches.Initialize();
 

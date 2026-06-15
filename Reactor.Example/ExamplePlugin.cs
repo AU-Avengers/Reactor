@@ -1,14 +1,11 @@
-using System;
 using BepInEx;
 using BepInEx.Unity.Mono;
-using UnityInterop.Runtime.Attributes;
 using Reactor.Localization;
 using Reactor.Localization.Utilities;
 using Reactor.Networking;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Rpc;
 using Reactor.Utilities;
-using Reactor.Utilities.Attributes;
 using Reactor.Utilities.ImGui;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -23,23 +20,22 @@ public partial class ExamplePlugin : BaseUnityPlugin
 {
     private static StringNames _helloStringName;
 
-    public override void Load()
+    private void Awake()
     {
         ReactorCredits.Register<ExamplePlugin>(ReactorCredits.AlwaysShow);
 
-        this.AddComponent<ExampleComponent>();
+        gameObject.AddComponent<ExampleComponent>();
 
         _helloStringName = CustomStringName.CreateAndRegister("Hello!");
         LocalizationManager.Register(new ExampleLocalizationProvider());
     }
 
-    [RegisterInUnity]
     public class ExampleComponent : MonoBehaviour
     {
         
-        public DragWindow TestWindow { get; }
+        public DragWindow TestWindow { get; private set; } = null!;
 
-        public ExampleComponent(IntPtr ptr) : base(ptr)
+        private void Awake()
         {
             TestWindow = new DragWindow(new Rect(60, 20, 0, 0), "Example", () =>
             {

@@ -1,5 +1,4 @@
-using UnityInterop.Runtime.Attributes;
-using Reactor.Utilities.Attributes;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -8,10 +7,9 @@ namespace Reactor.Utilities.UI;
 /// <summary>
 /// Wrapper over <see cref="GenericPopup"/> that adds hyperlink and controller support.
 /// </summary>
-[RegisterInUnity]
 internal sealed class ReactorPopup : MonoBehaviour
 {
-    private readonly UnitySystem.Collections.Generic.List<SelectableHyperLink> _selectableHyperLinks = new();
+    private readonly List<SelectableHyperLink> _selectableHyperLinks = new();
 
     public GenericPopup Popup { get; private set; } = null!;
     public TextMeshPro TextArea { get; private set; } = null!;

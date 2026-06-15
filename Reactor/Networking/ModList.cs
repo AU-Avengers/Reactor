@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text;
 using BepInEx;
 using BepInEx.Unity.Mono;
+using BepInEx.Unity.Mono.Bootstrap;
 using Hazel;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Patches;
+using Reactor.Utilities;
 
 namespace Reactor.Networking;
 
@@ -123,8 +125,8 @@ public static class ModList
         foreach (var mod in Current)
         {
             debug.AppendLine();
-            debug.Append(CultureInfo.InvariantCulture, $" - {mod.Id} version: {mod.Version}, flags: {mod.Flags}");
-            if (mod.IsRequiredOnAllClients) debug.Append(CultureInfo.InvariantCulture, $", netId: {mod.GetNetId()}");
+            debug.AppendFormat(CultureInfo.InvariantCulture, " - {0} version: {1}, flags: {2}", mod.Id, mod.Version, mod.Flags);
+            if (mod.IsRequiredOnAllClients) debug.AppendFormat(CultureInfo.InvariantCulture, ", netId: {0}", mod.GetNetId());
         }
 
         Debug(debug.ToString());
@@ -153,8 +155,10 @@ public static class ModList
             OnPluginLoad(existingPlugin, (BaseUnityPlugin) existingPlugin.Instance);
         }
 
-        UnityChainloader.Instance.PluginLoad += (pluginInfo, _, plugin) => OnPluginLoad(pluginInfo, plugin);
-
-        UnityChainloader.Instance.Finished += Refresh;
+        PluginLoadHooks.PluginLoaded += (pluginInfo, plugin) =>
+        {
+            OnPluginLoad(pluginInfo, plugin);
+            Refresh();
+        };
     }
 }

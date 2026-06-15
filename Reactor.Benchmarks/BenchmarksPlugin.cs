@@ -10,7 +10,7 @@ namespace Reactor.Benchmarks;
 [BepInDependency(ReactorPlugin.Id)]
 public partial class BenchmarksPlugin : BaseUnityPlugin
 {
-    public override void Load()
+    private void Awake()
     {
         try
         {

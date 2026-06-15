@@ -76,7 +76,12 @@ public class Window
             }
 
             GUI.skin.label.wordWrap = false;
-            Rect = GUILayout.Window(Id, Rect, Func, Title, GUILayout.MinWidth(GUI.skin.label.CalcSize(new GUIContent(Title)).x * 2));
+            Rect = GUILayout.Window(
+                Id,
+                Rect,
+                new GUI.WindowFunction(Func),
+                Title,
+                new[] { GUILayout.MinWidth(GUI.skin.label.CalcSize(new GUIContent(Title)).x * 2) });
 
             if ((Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)) && Rect.Contains(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y)))
             {

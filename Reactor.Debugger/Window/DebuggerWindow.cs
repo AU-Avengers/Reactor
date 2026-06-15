@@ -1,22 +1,14 @@
 using System;
-using System.Collections;
-using System.Linq;
 using AmongUs.Data;
-using BepInEx.Unity.Mono.Utils;
-using UnityInterop.Runtime.Attributes;
-using UnityInterop.Runtime.InteropTypes;
-using Reactor.Debugger.Utilities;
 using Reactor.Debugger.Window.Tabs;
-using Reactor.Utilities.Attributes;
 using Reactor.Utilities.ImGui;
 using UnityEngine;
 
 namespace Reactor.Debugger.Window;
 
-[RegisterInUnity]
 internal sealed class DebuggerWindow : MonoBehaviour
 {
-    private readonly DragWindow _window;
+    private DragWindow _window = null!;
 
     
     public BaseTab[] Tabs { get; } =
@@ -27,9 +19,9 @@ internal sealed class DebuggerWindow : MonoBehaviour
     };
 
     
-    public BaseTab SelectedTab { get; private set; }
+    public BaseTab SelectedTab { get; private set; } = null!;
 
-    public DebuggerWindow(IntPtr ptr) : base(ptr)
+    private void Awake()
     {
         SelectedTab = Tabs[0];
 
@@ -41,39 +33,7 @@ internal sealed class DebuggerWindow : MonoBehaviour
 
             if (GUILayout.Button("Hard crash"))
             {
-                static unsafe void Corrupt(UnityObjectBase o)
-                {
-                    var x = (IntPtr*) o.Pointer;
-                    x[0] = (IntPtr) 0xF00;
-                }
-
-                static IEnumerator CoCrash()
-                {
-                    if (!PlayerControl.LocalPlayer || !ShipStatus.Instance)
-                    {
-                        yield return AmongUsClient.Instance.CoCreateLocalGame(true);
-
-                        while (!PlayerControl.LocalPlayer || !ShipStatus.Instance)
-                        {
-                            yield return null;
-                        }
-                    }
-
-                    var usable = FindObjectsOfType<MonoBehaviour>().First(x => x.TryCast<IUsable>() != null);
-                    if (!usable)
-                    {
-                        Error("Failed to find an IUsable to crash with");
-                        yield break;
-                    }
-
-                    var cloned = Instantiate(usable, PlayerControl.LocalPlayer.transform.position, default);
-
-                    Warning($"Crashing with {cloned.name}");
-
-                    Corrupt(cloned);
-                }
-
-                this.StartCoroutine(CoCrash());
+                Environment.FailFast("Hard crash requested from Reactor.Debugger");
             }
 
             GUILayout.BeginHorizontal();

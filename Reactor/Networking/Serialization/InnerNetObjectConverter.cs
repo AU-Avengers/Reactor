@@ -30,7 +30,9 @@ public class InnerNetObjectConverter : MessageConverter<InnerNetObject?>
             return value(reader);
         }
 
-        var @delegate = _readNetObject.MakeGenericMethod(innerNetObjectType).CreateDelegate<Func<MessageReader, InnerNetObject>>();
+        var @delegate = (Func<MessageReader, InnerNetObject?>) _readNetObject
+            .MakeGenericMethod(innerNetObjectType)
+            .CreateDelegate(typeof(Func<MessageReader, InnerNetObject?>));
         _readNetObjectMap[innerNetObjectType] = @delegate;
         return @delegate(reader);
     }

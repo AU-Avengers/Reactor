@@ -1,5 +1,7 @@
 ﻿using Reactor.Utilities;
 
+using System.Globalization;
+
 namespace Reactor.Localization;
 
 /// <summary>
@@ -41,11 +43,11 @@ public abstract class LocalizationProvider
     /// <param name="parts">The arguments used for formatting.</param>
     /// <param name="result">The <see cref="string"/> representation of the given <see cref="StringNames"/>.</param>
     /// <returns>Whether or not this <see cref="LocalizationProvider"/> can handle this <see cref="StringNames"/>.</returns>
-    public virtual bool TryGetTextFormatted(StringNames stringName, UnityReferenceArray<UnitySystem.Object> parts, out string? result)
+    public virtual bool TryGetTextFormatted(StringNames stringName, object[] parts, out string? result)
     {
         if (!TryGetText(stringName, out result)) return false;
 
-        result = UnitySystem.String.Format(result, parts);
+        result = string.Format(CultureInfo.CurrentCulture, result!, parts);
         return true;
     }
 

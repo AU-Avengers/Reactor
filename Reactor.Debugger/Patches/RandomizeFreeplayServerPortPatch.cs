@@ -8,6 +8,7 @@ namespace Reactor.Debugger.Patches;
 [HarmonyPatch]
 internal static class RandomizeFreeplayServerPortPatch
 {
+    private static readonly Random Random = new();
     private static ushort? _lastPort;
 
     [HarmonyPatch(typeof(InnerNetServer), nameof(InnerNetServer.StartAsLocalServer))]
@@ -15,7 +16,7 @@ internal static class RandomizeFreeplayServerPortPatch
     {
         public static void Prefix(InnerNetServer __instance)
         {
-            var port = (ushort) Random.Shared.Next(1024, IPEndPoint.MaxPort);
+            var port = (ushort) Random.Next(1024, IPEndPoint.MaxPort);
             _lastPort = port;
             __instance.Port = port;
         }

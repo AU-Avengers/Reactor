@@ -19,12 +19,12 @@ public static class SceneManagerExtensions
     {
         UnityAction<Scene, LoadSceneMode>? unityAction = null;
 
-        unityAction = (Action<Scene, LoadSceneMode>) ((scene, loadMode) =>
+        unityAction = (scene, loadMode) =>
         {
-            SceneManager.remove_sceneLoaded(unityAction);
+            SceneManager.sceneLoaded -= unityAction;
             value.Invoke(scene, loadMode);
-        });
+        };
 
-        SceneManager.add_sceneLoaded(unityAction);
+        SceneManager.sceneLoaded += unityAction;
     }
 }

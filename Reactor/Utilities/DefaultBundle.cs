@@ -12,7 +12,7 @@ public static class DefaultBundle
     /// <summary>
     /// Gets standard resources used for canvas ui.
     /// </summary>
-    public static DefaultControls.Resources StandardResources { get; internal set; } = null!;
+    public static DefaultControls.Resources StandardResources { get; internal set; }
 
     internal static void Load()
     {

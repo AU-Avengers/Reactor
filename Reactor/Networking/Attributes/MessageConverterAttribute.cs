@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using BepInEx.Unity.Mono;
+using BepInEx.Unity.Mono.Bootstrap;
 using HarmonyLib;
 using Reactor.Networking.Serialization;
+using Reactor.Utilities;
 
 namespace Reactor.Networking.Attributes;
 
@@ -50,7 +52,10 @@ public sealed class MessageConverterAttribute : Attribute
 
     internal static void Initialize()
     {
-        UnityChainloader.Instance.PluginLoad += (_, assembly, _) => Register(assembly);
-        UnityChainloader.Instance.Finished += MessageSerializer.ClearMaps;
+        PluginLoadHooks.PluginLoaded += (_, plugin) =>
+        {
+            Register(plugin.GetType().Assembly);
+            MessageSerializer.ClearMaps();
+        };
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
-using Il2CppInterop.Runtime.InteropTypes;
 using Reactor.Utilities;
 
 namespace Reactor.Patches.Miscellaneous;
@@ -14,7 +13,7 @@ internal static class CustomServersPatch
     {
         const string Domain = "among.us";
 
-        return ServerManager.Instance.CurrentRegion?.TryCast<StaticHttpRegionInfo>() is { } regionInfo &&
+        return ServerManager.Instance.CurrentRegion is StaticHttpRegionInfo regionInfo &&
                regionInfo.PingServer.EndsWith(Domain, StringComparison.Ordinal) &&
                regionInfo.Servers.All(serverInfo => serverInfo.Ip.EndsWith(Domain, StringComparison.Ordinal));
     }
@@ -48,7 +47,7 @@ internal static class CustomServersPatch
             return Il2CppStateMachineWrapper<AmongUsClient>.GetStateMachineMoveNext(nameof(AmongUsClient.CoJoinOnlinePublicGame))!;
         }
 
-        public static void Prefix(Il2CppObjectBase __instance)
+        public static void Prefix(object __instance)
         {
             var stateMachine = new Il2CppStateMachineWrapper<AmongUsClient>(__instance);
 
@@ -56,7 +55,7 @@ internal static class CustomServersPatch
             if (stateMachine.State == 0 && !ServerManager.Instance.IsHttp)
             {
                 stateMachine.State = 1;
-                var lambdaType = stateMachine.GetParameter<Il2CppObjectBase>("__8__1").GetType();
+                var lambdaType = stateMachine.GetParameter<object>("<>8__1").GetType();
                 var newDisplayClassObject = Activator.CreateInstance(lambdaType);
                 if (newDisplayClassObject == null)
                 {
@@ -66,7 +65,7 @@ internal static class CustomServersPatch
                 var wrappedDisplayClassObject = new Il2CppCompilerGeneratedObjectWrapper(newDisplayClassObject);
                 wrappedDisplayClassObject.SetField("matchmakerToken", string.Empty);
 
-                stateMachine.SetParameter("__8__1", newDisplayClassObject);
+                stateMachine.SetParameter("<>8__1", newDisplayClassObject);
             }
         }
     }

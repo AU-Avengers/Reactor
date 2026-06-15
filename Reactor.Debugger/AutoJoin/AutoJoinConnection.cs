@@ -48,7 +48,7 @@ internal abstract class AutoJoinConnection : IDisposable
 
     protected abstract void Handle(BinaryReader reader, MessageType messageType);
 
-    public void Write<T>(in T message) where T : IMessage<T>
+    public void Write<T>(in T message) where T : struct, IMessage
     {
         Debug($"Writing {message}");
         _writer.Write(message);

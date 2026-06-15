@@ -1,3 +1,4 @@
+global using static Reactor.Utilities.Logger<Reactor.ReactorPlugin>;
 using System;
 using BepInEx;
 using BepInEx.Logging;
@@ -12,7 +13,6 @@ using Reactor.Networking.Rpc;
 using Reactor.Patches;
 using Reactor.Patches.Miscellaneous;
 using Reactor.Utilities;
-using Reactor.Utilities.Attributes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -30,7 +30,7 @@ public partial class ReactorPlugin : BaseUnityPlugin
     /// </summary>
     public Harmony Harmony { get; } = new(Id);
 
-    public static ManualLogSource LogSource;
+    internal static ManualLogSource LogSource { get; private set; } = null!;
 
     /// <summary>
     /// Gets custom rpc manager.
@@ -48,12 +48,12 @@ public partial class ReactorPlugin : BaseUnityPlugin
         PluginSingleton<ReactorPlugin>.Instance = this;
         PluginSingleton<BaseUnityPlugin>.Initialize();
 
-        RegisterInUnityAttribute.Initialize();
         ModList.Initialize();
 
         RegisterCustomRpcAttribute.Initialize();
         MessageConverterAttribute.Initialize();
         MethodRpcAttribute.Initialize();
+        PluginLoadHooks.Notify(this);
 
         LocalizationManager.Register(new HardCodedLocalizationProvider());
     }
@@ -72,13 +72,13 @@ public partial class ReactorPlugin : BaseUnityPlugin
         FreeNamePatch.Initialize();
         DefaultBundle.Load();
 
-        SceneManager.sceneLoaded += (Action<Scene, LoadSceneMode>) ((scene, _) =>
+        SceneManager.sceneLoaded += (scene, _) =>
         {
             if (scene.name == "MainMenu")
             {
                 ModManager.Instance.ShowModStamp();
             }
-        });
+        };
     }
 
     internal void OnDestroy()
@@ -87,7 +87,6 @@ public partial class ReactorPlugin : BaseUnityPlugin
         RegionInfoWatcher.Dispose();
     }
 
-    [RegisterInUnity]
     private sealed class ReactorComponent : MonoBehaviour
     {
         public ReactorPlugin? Plugin { get; internal set; }

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityInterop.Runtime.Attributes;
-using Reactor.Utilities.Attributes;
 using UnityEngine;
 
 namespace Reactor.Utilities;
@@ -9,7 +7,6 @@ namespace Reactor.Utilities;
 /// <summary>
 /// Dispatches actions on Unity main thread.
 /// </summary>
-[RegisterInUnity]
 public sealed class Dispatcher : MonoBehaviour
 {
     /// <summary>

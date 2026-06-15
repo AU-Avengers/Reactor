@@ -1,0 +1,400 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\utilities\\dispatcher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\utilities\\dispatcher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\utilities\\il2cppcompilergeneratedobjectwrapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\utilities\\il2cppcompilergeneratedobjectwrapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\utilities\\il2cppequalitycomparer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\utilities\\il2cppequalitycomparer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\utilities\\il2cppstatemachinewrapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\utilities\\il2cppstatemachinewrapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{26A83466-26FE-4383-A35C-B8629902F909}|Reactor.Example\\Reactor.Example.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor.example\\exampleplugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{26A83466-26FE-4383-A35C-B8629902F909}|Reactor.Example\\Reactor.Example.csproj|solutionrelative:reactor.example\\exampleplugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{68589B4D-9EF5-40DD-8D6D-10977ED07259}|Reactor.Debugger\\Reactor.Debugger.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor.debugger\\window\\debuggerwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68589B4D-9EF5-40DD-8D6D-10977ED07259}|Reactor.Debugger\\Reactor.Debugger.csproj|solutionrelative:reactor.debugger\\window\\debuggerwindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\reactorplugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\reactorplugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\utilities\\ui\\reactorpopup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\utilities\\ui\\reactorpopup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\utilities\\coroutines.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\utilities\\coroutines.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\networking\\attributes\\messageconverterattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\networking\\attributes\\messageconverterattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\networking\\modlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\networking\\modlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\networking\\patches\\clientpatches.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\networking\\patches\\clientpatches.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\compiler\\isunmanagedattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\compiler\\isunmanagedattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\patches\\miscellaneous\\splashskippatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\patches\\miscellaneous\\splashskippatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\networking\\patches\\reactorclientdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\networking\\patches\\reactorclientdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\networking\\patches\\reactorconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\networking\\patches\\reactorconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\patches\\miscellaneous\\pingtrackerpatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\patches\\miscellaneous\\pingtrackerpatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\patches\\fixes\\serverinfofixespatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\patches\\fixes\\serverinfofixespatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\patches\\miscellaneous\\disableserverauthoritypatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\patches\\miscellaneous\\disableserverauthoritypatch.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\packages.lock.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\packages.lock.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BBF0A80-F6E6-4FDD-ADD0-8CB4F28F88A4}|Solution Files{4BBF0A80-F6E6-4FDD-ADD0-8CB4F28F88A4}|C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\AmongUs.props||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{4BBF0A80-F6E6-4FDD-ADD0-8CB4F28F88A4}|Solution Files{4BBF0A80-F6E6-4FDD-ADD0-8CB4F28F88A4}|solutionrelative:AmongUs.props||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\reactorconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\reactorconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|c:\\users\\nicol\\documents\\github\\reactor\\reactor\\reactor.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{91906039-9753-472B-ACC3-12C0561FFAD8}|Reactor\\Reactor.csproj|solutionrelative:reactor\\reactor.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Il2CppCompilerGeneratedObjectWrapper.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Utilities\\Il2CppCompilerGeneratedObjectWrapper.cs",
+              "RelativeDocumentMoniker": "Reactor\\Utilities\\Il2CppCompilerGeneratedObjectWrapper.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Utilities\\Il2CppCompilerGeneratedObjectWrapper.cs",
+              "RelativeToolTip": "Reactor\\Utilities\\Il2CppCompilerGeneratedObjectWrapper.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T22:04:34.147Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Il2CppEqualityComparer.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Utilities\\Il2CppEqualityComparer.cs",
+              "RelativeDocumentMoniker": "Reactor\\Utilities\\Il2CppEqualityComparer.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Utilities\\Il2CppEqualityComparer.cs",
+              "RelativeToolTip": "Reactor\\Utilities\\Il2CppEqualityComparer.cs",
+              "ViewState": "AgIAABgAAAAAAAAAAAAowAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T22:04:28.777Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Il2CppStateMachineWrapper.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Utilities\\Il2CppStateMachineWrapper.cs",
+              "RelativeDocumentMoniker": "Reactor\\Utilities\\Il2CppStateMachineWrapper.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Utilities\\Il2CppStateMachineWrapper.cs",
+              "RelativeToolTip": "Reactor\\Utilities\\Il2CppStateMachineWrapper.cs",
+              "ViewState": "AgIAAE8AAAAAAAAAAAAcwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T22:04:22.032Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "DebuggerWindow.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor.Debugger\\Window\\DebuggerWindow.cs",
+              "RelativeDocumentMoniker": "Reactor.Debugger\\Window\\DebuggerWindow.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor.Debugger\\Window\\DebuggerWindow.cs",
+              "RelativeToolTip": "Reactor.Debugger\\Window\\DebuggerWindow.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T22:03:41.351Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ExamplePlugin.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor.Example\\ExamplePlugin.cs",
+              "RelativeDocumentMoniker": "Reactor.Example\\ExamplePlugin.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor.Example\\ExamplePlugin.cs",
+              "RelativeToolTip": "Reactor.Example\\ExamplePlugin.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAUwB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T22:03:31.575Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Dispatcher.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Utilities\\Dispatcher.cs",
+              "RelativeDocumentMoniker": "Reactor\\Utilities\\Dispatcher.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Utilities\\Dispatcher.cs",
+              "RelativeToolTip": "Reactor\\Utilities\\Dispatcher.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAgAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T22:03:15.396Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Coroutines.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Utilities\\Coroutines.cs",
+              "RelativeDocumentMoniker": "Reactor\\Utilities\\Coroutines.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Utilities\\Coroutines.cs",
+              "RelativeToolTip": "Reactor\\Utilities\\Coroutines.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAwwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T22:02:49.946Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "MessageConverterAttribute.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Networking\\Attributes\\MessageConverterAttribute.cs",
+              "RelativeDocumentMoniker": "Reactor\\Networking\\Attributes\\MessageConverterAttribute.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Networking\\Attributes\\MessageConverterAttribute.cs",
+              "RelativeToolTip": "Reactor\\Networking\\Attributes\\MessageConverterAttribute.cs",
+              "ViewState": "AgIAACgAAAAAAAAAAAD4vzUAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:57:14.906Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ModList.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Networking\\ModList.cs",
+              "RelativeDocumentMoniker": "Reactor\\Networking\\ModList.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Networking\\ModList.cs",
+              "RelativeToolTip": "Reactor\\Networking\\ModList.cs",
+              "ViewState": "AgIAAI8AAAAAAAAAAAD4v5wAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:57:12.231Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "IsUnmanagedAttribute.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Compiler\\IsUnmanagedAttribute.cs",
+              "RelativeDocumentMoniker": "Reactor\\Compiler\\IsUnmanagedAttribute.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Compiler\\IsUnmanagedAttribute.cs",
+              "RelativeToolTip": "Reactor\\Compiler\\IsUnmanagedAttribute.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:38:23.448Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "SplashSkipPatch.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Patches\\Miscellaneous\\SplashSkipPatch.cs",
+              "RelativeDocumentMoniker": "Reactor\\Patches\\Miscellaneous\\SplashSkipPatch.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Patches\\Miscellaneous\\SplashSkipPatch.cs",
+              "RelativeToolTip": "Reactor\\Patches\\Miscellaneous\\SplashSkipPatch.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:37:26.278Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ReactorClientData.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Networking\\Patches\\ReactorClientData.cs",
+              "RelativeDocumentMoniker": "Reactor\\Networking\\Patches\\ReactorClientData.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Networking\\Patches\\ReactorClientData.cs",
+              "RelativeToolTip": "Reactor\\Networking\\Patches\\ReactorClientData.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAtwCEAAABEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:36:03.761Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ReactorPopup.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Utilities\\UI\\ReactorPopup.cs",
+              "RelativeDocumentMoniker": "Reactor\\Utilities\\UI\\ReactorPopup.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Utilities\\UI\\ReactorPopup.cs",
+              "RelativeToolTip": "Reactor\\Utilities\\UI\\ReactorPopup.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAQwAgAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:36:00.766Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "ReactorConnection.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Networking\\Patches\\ReactorConnection.cs",
+              "RelativeDocumentMoniker": "Reactor\\Networking\\Patches\\ReactorConnection.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Networking\\Patches\\ReactorConnection.cs",
+              "RelativeToolTip": "Reactor\\Networking\\Patches\\ReactorConnection.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAD4vysAAABAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:35:59.826Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "PingTrackerPatch.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Patches\\Miscellaneous\\PingTrackerPatch.cs",
+              "RelativeDocumentMoniker": "Reactor\\Patches\\Miscellaneous\\PingTrackerPatch.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Patches\\Miscellaneous\\PingTrackerPatch.cs",
+              "RelativeToolTip": "Reactor\\Patches\\Miscellaneous\\PingTrackerPatch.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:35:58.849Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "ServerInfoFixesPatch.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Patches\\Fixes\\ServerInfoFixesPatch.cs",
+              "RelativeDocumentMoniker": "Reactor\\Patches\\Fixes\\ServerInfoFixesPatch.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Patches\\Fixes\\ServerInfoFixesPatch.cs",
+              "RelativeToolTip": "Reactor\\Patches\\Fixes\\ServerInfoFixesPatch.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAmwBQAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:35:57.323Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ClientPatches.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Networking\\Patches\\ClientPatches.cs",
+              "RelativeDocumentMoniker": "Reactor\\Networking\\Patches\\ClientPatches.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Networking\\Patches\\ClientPatches.cs",
+              "RelativeToolTip": "Reactor\\Networking\\Patches\\ClientPatches.cs",
+              "ViewState": "AgIAADQBAAAAAAAAAAD4v0MBAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:35:52.844Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "DisableServerAuthorityPatch.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Patches\\Miscellaneous\\DisableServerAuthorityPatch.cs",
+              "RelativeDocumentMoniker": "Reactor\\Patches\\Miscellaneous\\DisableServerAuthorityPatch.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Patches\\Miscellaneous\\DisableServerAuthorityPatch.cs",
+              "RelativeToolTip": "Reactor\\Patches\\Miscellaneous\\DisableServerAuthorityPatch.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:26:46.362Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "packages.lock.json",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\packages.lock.json",
+              "RelativeDocumentMoniker": "Reactor\\packages.lock.json",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\packages.lock.json",
+              "RelativeToolTip": "Reactor\\packages.lock.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-06-15T21:18:31.089Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "ReactorConfig.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\ReactorConfig.cs",
+              "RelativeDocumentMoniker": "Reactor\\ReactorConfig.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\ReactorConfig.cs",
+              "RelativeToolTip": "Reactor\\ReactorConfig.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:18:29.799Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ReactorPlugin.cs",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\ReactorPlugin.cs",
+              "RelativeDocumentMoniker": "Reactor\\ReactorPlugin.cs",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\ReactorPlugin.cs",
+              "RelativeToolTip": "Reactor\\ReactorPlugin.cs",
+              "ViewState": "AgIAAEwAAAAAAAAAAAAtwFgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-15T21:06:22.723Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "Reactor.csproj",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Reactor.csproj",
+              "RelativeDocumentMoniker": "Reactor\\Reactor.csproj",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\Reactor\\Reactor.csproj",
+              "RelativeToolTip": "Reactor\\Reactor.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-06-15T21:06:05.344Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "AmongUs.props",
+              "DocumentMoniker": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\AmongUs.props",
+              "RelativeDocumentMoniker": "AmongUs.props",
+              "ToolTip": "C:\\Users\\nicol\\Documents\\GitHub\\Reactor\\AmongUs.props",
+              "RelativeToolTip": "AmongUs.props",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2026-06-15T21:05:48.593Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

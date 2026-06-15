@@ -28,18 +28,11 @@ public class Il2CppCompilerGeneratedObjectWrapper
     /// <summary>
     /// Gets the property info cache for faster lookups.
     /// </summary>
-    protected Dictionary<string, PropertyInfo> PropertyCache { get; }
+    protected Dictionary<string, FieldInfo> FieldCache { get; }
 
     /// <summary>
     /// Gets the getter cache for faster property access.
     /// </summary>
-    protected Dictionary<string, Delegate> GetterCache { get; }
-
-    /// <summary>
-    /// Gets the setter cache for faster property access.
-    /// </summary>
-    protected Dictionary<string, Delegate> SetterCache { get; }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Il2CppCompilerGeneratedObjectWrapper"/> class.
     /// </summary>
@@ -49,9 +42,7 @@ public class Il2CppCompilerGeneratedObjectWrapper
         GeneratedObject = generatedObject;
         GeneratedType = generatedObject.GetType();
 
-        PropertyCache = [];
-        GetterCache = [];
-        SetterCache = [];
+        FieldCache = [];
     }
 
     /// <summary>
@@ -62,27 +53,20 @@ public class Il2CppCompilerGeneratedObjectWrapper
     /// <returns>The cached <see cref="PropertyInfo"/> for the specified field.</returns>
     /// <exception cref="MissingMemberException">Thrown if the field does not exist in the compiler generated type.</exception>
     /// <exception cref="InvalidCastException">Thrown if the field exists but is not of the expected type.</exception>
-    public PropertyInfo CacheProperty<T>(string fieldName)
+    public FieldInfo CacheField<T>(string fieldName)
     {
-        var propertyInfo = AccessTools.Property(GeneratedType, fieldName)
-                           ?? throw new MissingMemberException(
-                               $"Could not find field '{fieldName}' in type '{GeneratedType}'.");
+        var fieldInfo = AccessTools.Field(GeneratedType, fieldName)
+                        ?? throw new MissingMemberException(
+                            $"Could not find field '{fieldName}' in type '{GeneratedType}'.");
 
-        if (propertyInfo.PropertyType != typeof(T))
+        if (fieldInfo.FieldType != typeof(T))
         {
             throw new InvalidCastException(
-                $"Field '{fieldName}' is of type '{propertyInfo.PropertyType}', not '{typeof(T)}'.");
+                $"Field '{fieldName}' is of type '{fieldInfo.FieldType}', not '{typeof(T)}'.");
         }
 
-        PropertyCache[fieldName] = propertyInfo;
-
-        var funcType = typeof(Func<T>);
-        GetterCache[fieldName] = propertyInfo.GetMethod!.CreateDelegate(funcType, GeneratedObject);
-
-        var actionType = typeof(Action<T>);
-        SetterCache[fieldName] = propertyInfo.SetMethod!.CreateDelegate(actionType, GeneratedObject);
-
-        return propertyInfo;
+        FieldCache[fieldName] = fieldInfo;
+        return fieldInfo;
     }
 
     /// <summary>
@@ -94,17 +78,12 @@ public class Il2CppCompilerGeneratedObjectWrapper
     /// <exception cref="MissingMemberException">Thrown if the field does not exist.</exception>
     public TField GetField<TField>(string fieldName)
     {
-        if (!PropertyCache.TryGetValue(fieldName, out var propertyInfo))
+        if (!FieldCache.TryGetValue(fieldName, out var fieldInfo))
         {
-            propertyInfo = CacheProperty<TField>(fieldName);
+            fieldInfo = CacheField<TField>(fieldName);
         }
 
-        if (GetterCache.TryGetValue(fieldName, out var getter))
-        {
-            return ((Func<TField>) getter)();
-        }
-
-        return (TField) propertyInfo.GetValue(GeneratedObject)!;
+        return (TField) fieldInfo.GetValue(GeneratedObject)!;
     }
 
     /// <summary>
@@ -116,17 +95,11 @@ public class Il2CppCompilerGeneratedObjectWrapper
     /// <exception cref="MissingMemberException">Thrown if the field does not exist.</exception>
     public void SetField<TField>(string fieldName, TField value)
     {
-        if (!PropertyCache.TryGetValue(fieldName, out var propertyInfo))
+        if (!FieldCache.TryGetValue(fieldName, out var fieldInfo))
         {
-            propertyInfo = CacheProperty<TField>(fieldName);
+            fieldInfo = CacheField<TField>(fieldName);
         }
 
-        if (SetterCache.TryGetValue(fieldName, out var setter))
-        {
-            ((Action<TField>) setter)(value);
-            return;
-        }
-
-        propertyInfo.SetValue(GeneratedObject, value);
+        fieldInfo.SetValue(GeneratedObject, value);
     }
 }

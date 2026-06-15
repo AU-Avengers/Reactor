@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using UnitySystem.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
 namespace Reactor.Utilities;
 
 /// <inheritdoc />
-public sealed class UnityEqualityComparer<T> : IEqualityComparer<T> where T : UnitySystem.Object
+public sealed class UnityEqualityComparer<T> : IEqualityComparer<T> where T : class
 {
     private static UnityEqualityComparer<T>? _instance;
 

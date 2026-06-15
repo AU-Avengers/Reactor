@@ -1,6 +1,7 @@
 using System;
 using BepInEx;
 using BepInEx.Unity.Mono;
+using BepInEx.Unity.Mono.Bootstrap;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using TMPro;
@@ -32,14 +33,14 @@ public static class ReactorVersionShower
         Text.transform.position = pos;
     }
 
-    private static readonly ResolutionManager.ResolutionChangedHandler _resolutionChangedHandler = (Action<float, int, int, bool>) ((aspectRatio, _, _, _) =>
+    private static readonly ResolutionManager.ResolutionChangedHandler _resolutionChangedHandler = (aspectRatio, _, _, _) =>
     {
         SetMainMenuPositionFromAspect(aspectRatio);
-    });
+    };
 
     internal static void Initialize()
     {
-        SceneManager.add_sceneLoaded((Action<Scene, LoadSceneMode>) ((scene, _) =>
+        SceneManager.sceneLoaded += (scene, _) =>
         {
             var original = UnityEngine.Object.FindObjectOfType<VersionShower>();
             if (!original)
@@ -62,12 +63,12 @@ public static class ReactorVersionShower
 
             if (scene.name == "MainMenu")
             {
-                ResolutionManager.add_ResolutionChanged(_resolutionChangedHandler);
+                ResolutionManager.ResolutionChanged += _resolutionChangedHandler;
                 SetMainMenuPositionFromAspect(Screen.width / (float) Screen.height);
             }
             else
             {
-                ResolutionManager.remove_ResolutionChanged(_resolutionChangedHandler);
+                ResolutionManager.ResolutionChanged -= _resolutionChangedHandler;
                 var aspectPosition = gameObject.AddComponent<AspectPosition>();
                 var distanceFromEdge = new Vector3(10.13f, 2.55f, -1);
                 if (originalAspectPosition.Alignment == AspectPosition.EdgeAlignments.LeftTop)
@@ -86,7 +87,7 @@ public static class ReactorVersionShower
             }
 
             UpdateText();
-        }));
+        };
     }
 
     /// <summary>

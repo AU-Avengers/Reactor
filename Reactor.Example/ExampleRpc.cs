@@ -1,6 +1,7 @@
 using Hazel;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Rpc;
+using Reactor.Utilities;
 
 namespace Reactor.Example;
 
@@ -11,7 +12,15 @@ public class ExampleRpc : PlayerCustomRpc<ExamplePlugin, ExampleRpc.Data>
     {
     }
 
-    public readonly record struct Data(string Message);
+    public readonly struct Data
+    {
+        public Data(string message)
+        {
+            Message = message;
+        }
+
+        public string Message { get; }
+    }
 
     public override RpcLocalHandling LocalHandling => RpcLocalHandling.None;
 
@@ -27,6 +36,6 @@ public class ExampleRpc : PlayerCustomRpc<ExamplePlugin, ExampleRpc.Data>
 
     public override void Handle(PlayerControl innerNetObject, Data data)
     {
-        Plugin.Log.LogWarning($"Handle: {innerNetObject.Data.PlayerName} sent \"{data.Message}\"");
+        Logger<ExamplePlugin>.Warning($"Handle: {innerNetObject.Data.PlayerName} sent \"{data.Message}\"");
     }
 }

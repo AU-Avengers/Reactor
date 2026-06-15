@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Hazel;
-using UnityInterop.Generator.Extensions;
 using InnerNet;
 using Reactor.Utilities;
 
@@ -36,9 +35,19 @@ public class CustomRpcManager
     {
         customRpc.Manager = this;
         _list.Add(customRpc);
-        _map.GetOrCreate(customRpc.InnerNetObjectType, static _ => new Dictionary<Mod, Dictionary<uint, UnsafeCustomRpc>>())
-            .GetOrCreate(customRpc.Mod, static _ => new Dictionary<uint, UnsafeCustomRpc>())
-            .Add(customRpc.Id, customRpc);
+        if (!_map.TryGetValue(customRpc.InnerNetObjectType, out var modRpcs))
+        {
+            modRpcs = new Dictionary<Mod, Dictionary<uint, UnsafeCustomRpc>>();
+            _map.Add(customRpc.InnerNetObjectType, modRpcs);
+        }
+
+        if (!modRpcs.TryGetValue(customRpc.Mod, out var rpcs))
+        {
+            rpcs = new Dictionary<uint, UnsafeCustomRpc>();
+            modRpcs.Add(customRpc.Mod, rpcs);
+        }
+
+        rpcs.Add(customRpc.Id, customRpc);
 
         if (customRpc.IsSingleton)
         {

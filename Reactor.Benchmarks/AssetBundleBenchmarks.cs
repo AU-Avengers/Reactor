@@ -40,7 +40,10 @@ public class AssetBundleBenchmarks
 
     private AssetBundle LoadAll(AssetBundle assetBundle)
     {
-        ArgumentNullException.ThrowIfNull(assetBundle);
+        if (assetBundle == null)
+        {
+            throw new ArgumentNullException(nameof(assetBundle));
+        }
 
         assetBundle.LoadAllAssets();
         return assetBundle;
@@ -55,7 +58,7 @@ public class AssetBundleBenchmarks
     public AssetBundle LoadFromStream()
     {
         using var stream = GetResourceStream();
-        return LoadAll(AssetBundle.LoadFromStream(stream.AsUnity()));
+        return LoadAll(AssetBundle.LoadFromStream(stream));
     }
 
     [Benchmark]
@@ -66,14 +69,10 @@ public class AssetBundleBenchmarks
     }
 
     [Benchmark]
-    public unsafe AssetBundle LoadFromMemory_ReadFullyFastCopy()
+    public AssetBundle LoadFromMemory_ReadFullyFastCopy()
     {
         using var stream = GetResourceStream();
-        var array = stream.ReadFully();
-        var UnityArray = new UnityStructArray<byte>(array.Length);
-        fixed (byte* arrayPtr = array) { Buffer.MemoryCopy(arrayPtr, IntPtr.Add(UnityArray.Pointer, 4 * IntPtr.Size).ToPointer(), UnityArray.Length, array.Length); }
-
-        return LoadAll(AssetBundle.LoadFromMemory(UnityArray));
+        return LoadAll(AssetBundle.LoadFromMemory(stream.ReadFully()));
     }
 
     [Benchmark]
@@ -82,8 +81,8 @@ public class AssetBundleBenchmarks
         using var stream = GetResourceStream();
         var length = (int) stream.Length;
 
-        var array = new UnityStructArray<byte>(length);
-        if (stream.Read(array.ToSpan()) < length) throw new IOException("Failed to read in full");
+        var array = new byte[length];
+        if (stream.Read(array, 0, length) < length) throw new IOException("Failed to read in full");
 
         return LoadAll(AssetBundle.LoadFromMemory(array));
     }

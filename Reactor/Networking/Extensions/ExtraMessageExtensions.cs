@@ -123,12 +123,12 @@ public static class ExtraMessageExtensions
         if (msg.SendOption != SendOption.Reliable)
             throw new InvalidOperationException("Message SendOption has to be Reliable.");
 
-        var buffer = new byte[msg.Length];
-        Buffer.BlockCopy(msg.Buffer, 0, buffer, 0, msg.Length);
+        var buffer = connection.bufferPool.GetObject();
+        buffer.CopyFrom(msg, true);
 
         connection.ResetKeepAliveTimer();
 
-        connection.AttachReliableID(buffer, 1, ackCallback);
-        connection.WriteBytesToConnection(buffer, buffer.Length);
+        connection.AttachReliableID(buffer, 1, msg.Length, ackCallback);
+        connection.WriteBytesToConnection(buffer, msg.Length);
     }
 }

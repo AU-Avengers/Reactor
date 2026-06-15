@@ -14,16 +14,15 @@ namespace Reactor.Utilities;
 /// <typeparam name="T">The type of the parent class that owns the state machine.</typeparam>
 public class Il2CppStateMachineWrapper<T> : Il2CppCompilerGeneratedObjectWrapper
 {
-    // normally it is fields, but Unity turns them into properties
-    private readonly PropertyInfo _thisProperty;
-    private readonly PropertyInfo _stateProperty;
+    private readonly FieldInfo _thisField;
+    private readonly FieldInfo _stateField;
 
     private T? _parentInstance;
 
     /// <summary>
     /// Gets the instance of the parent class that owns the state machine.
     /// </summary>
-    public T Instance => _parentInstance ??= (T) _thisProperty.GetValue(GeneratedObject)!;
+    public T Instance => _parentInstance ??= (T) _thisField.GetValue(GeneratedObject)!;
 
     /// <summary>
     /// Gets or sets the current state of the state machine.
@@ -31,8 +30,8 @@ public class Il2CppStateMachineWrapper<T> : Il2CppCompilerGeneratedObjectWrapper
     /// <returns>The current state as an integer.</returns>
     public int State
     {
-        get => (int) _stateProperty.GetValue(GeneratedObject)!;
-        set => _stateProperty.SetValue(GeneratedObject, value);
+        get => (int) _stateField.GetValue(GeneratedObject)!;
+        set => _stateField.SetValue(GeneratedObject, value);
     }
 
     /// <summary>
@@ -43,10 +42,10 @@ public class Il2CppStateMachineWrapper<T> : Il2CppCompilerGeneratedObjectWrapper
     {
         // The names of these properties are implementation details of the IL compiler used by Unity.
         // They should be stable as long as Unity sticks to mono.
-        _thisProperty = AccessTools.Property(GeneratedType, "__4__this");
-        _stateProperty = AccessTools.Property(GeneratedType, "__1__state");
+        _thisField = AccessTools.Field(GeneratedType, "<>4__this");
+        _stateField = AccessTools.Field(GeneratedType, "<>1__state");
 
-        if (_thisProperty == null || _stateProperty == null)
+        if (_thisField == null || _stateField == null)
         {
             throw new MissingMemberException($"Could not find required properties in type '{GeneratedType}'.");
         }
@@ -81,21 +80,17 @@ public class Il2CppStateMachineWrapper<T> : Il2CppCompilerGeneratedObjectWrapper
     /// </summary>
     /// <param name="methodName">The name of the method whose state machine MoveNext method is to be retrieved.</param>
     /// <returns>The MoveNext <see cref="MethodBase"/> if found; otherwise, null.</returns>
-    public static MethodBase? GetStateMachineMoveNext(string methodName)
+    public static MethodBase? GetStateMachineMoveNext(string methodName, Type[]? parameterTypes = null)
     {
         var typeName = typeof(T).FullName;
-        var showRoleStateMachine =
-            typeof(T)
-                .GetNestedTypes()
-                .FirstOrDefault(x => x.Name.Contains(methodName));
-
-        if (showRoleStateMachine == null)
+        var method = AccessTools.Method(typeof(T), methodName, parameterTypes);
+        if (method == null)
         {
-            Error($"Failed to find {methodName} state machine for {typeName}");
+            Error($"Failed to find {typeName}.{methodName}");
             return null;
         }
 
-        var moveNext = AccessTools.Method(showRoleStateMachine, "MoveNext");
+        var moveNext = AccessTools.EnumeratorMoveNext(method);
         if (moveNext == null)
         {
             Error($"Failed to find MoveNext method for {typeName}.{methodName}");

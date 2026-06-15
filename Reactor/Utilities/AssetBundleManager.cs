@@ -33,15 +33,15 @@ public static class AssetBundleManager
     {
         string operatingSystem;
 
-        if (OperatingSystem.IsWindows())
+        if (Application.platform == RuntimePlatform.WindowsPlayer)
         {
             operatingSystem = "win";
         }
-        else if (OperatingSystem.IsLinux())
+        else if (Application.platform == RuntimePlatform.LinuxPlayer)
         {
             operatingSystem = "linux";
         }
-        else if (OperatingSystem.IsAndroid())
+        else if (Application.platform == RuntimePlatform.Android)
         {
             operatingSystem = "android";
         }
@@ -99,7 +99,7 @@ public static class AssetBundleManager
         return false;
     }
 
-    private static bool TryLoadResource(Assembly assembly, string fileName, [NotNullWhen(true)] out UnityStructArray<byte>? data)
+    private static bool TryLoadResource(Assembly assembly, string fileName, [NotNullWhen(true)] out byte[]? data)
     {
         var resourceName = assembly.GetManifestResourceNames().SingleOrDefault(n => n.EndsWith(fileName, StringComparison.Ordinal));
         if (resourceName != null)
@@ -109,8 +109,8 @@ public static class AssetBundleManager
             using var stream = assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException("Resource stream was null");
 
             var length = (int) stream.Length;
-            data = new UnityStructArray<byte>(length);
-            if (stream.Read(data.ToSpan()) < length) throw new IOException("Failed to read in full");
+            data = new byte[length];
+            if (stream.Read(data, 0, length) < length) throw new IOException("Failed to read in full");
 
             return true;
         }

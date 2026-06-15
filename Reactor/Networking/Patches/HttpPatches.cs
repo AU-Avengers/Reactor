@@ -38,7 +38,7 @@ internal static class HttpPatches
     {
         var currentRegion = ServerManager.Instance.CurrentRegion;
 
-        if (currentRegion.TryCast<StaticHttpRegionInfo>() is { } httpRegionInfo)
+        if (currentRegion is StaticHttpRegionInfo httpRegionInfo)
         {
             var lastConnection = SendWebRequestPatch.LastConnection;
             return lastConnection.HasValue && lastConnection.Value.RegionInfo.Equals(httpRegionInfo) && lastConnection.Value.IsModded;
@@ -75,7 +75,7 @@ internal static class HttpPatches
             // So we need to match everything that contains /api/games
             if (path.Contains("/api/games"))
             {
-                __result.add_completed((Action<AsyncOperation>) (_ =>
+                __result.completed += _ =>
                 {
                     if (!HttpUtils.IsSuccess(__instance.responseCode)) return;
 
@@ -90,7 +90,7 @@ internal static class HttpPatches
                         Warning("Connected to a vanilla HTTP matchmaking server");
                     }
 
-                    if (__instance.GetMethod() == UnityWebRequest.UnityWebRequestMethod.Get)
+                    if (__instance.method == UnityWebRequest.kHttpVerbGET)
                     {
                         if (responseHeader == null && ModList.IsAnyModRequiredOnAllClients)
                         {
@@ -98,8 +98,8 @@ internal static class HttpPatches
                         }
                     }
 
-                    LastConnection = (ServerManager.Instance.CurrentRegion.Cast<StaticHttpRegionInfo>(), responseHeader != null);
-                }));
+                    LastConnection = ((StaticHttpRegionInfo) ServerManager.Instance.CurrentRegion, responseHeader != null);
+                };
             }
         }
     }
@@ -115,10 +115,10 @@ internal static class HttpPatches
                 Warning("Vanilla region, locking public toggle");
 
                 __instance.HostPublicButton.enabled = false;
-                __instance.HostPrivateButton.transform.FindChild("Inactive").GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
+                __instance.HostPrivateButton.transform.Find("Inactive").GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
 
                 var onClick = __instance.HostPrivateButton.OnClick = new Button.ButtonClickedEvent();
-                onClick.AddListener((Action) MakePublicDisallowedPopup.Show);
+                onClick.AddListener(MakePublicDisallowedPopup.Show);
 
                 if (AmongUsClient.Instance.AmHost && AmongUsClient.Instance.IsGamePublic)
                 {

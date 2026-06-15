@@ -50,7 +50,7 @@ internal static class AutoJoinConnectionManager
         {
             if (!DebuggerConfig.JoinGameOnStart.Value) return;
 
-            if (__instance.TryCast<AmongUsClient>() is { } amongUsClient)
+            if (__instance is AmongUsClient amongUsClient)
             {
                 if (Server != null)
                 {

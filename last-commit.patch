@@ -1,0 +1,1614 @@
+commit 623d52ee9e546c133d2af1d842f00d4b5ae52183
+Author:     Atony <75191600+AtonyGit@users.noreply.github.com>
+AuthorDate: Sun Jun 14 21:42:56 2026 -0500
+Commit:     Atony <75191600+AtonyGit@users.noreply.github.com>
+CommitDate: Sun Jun 14 21:42:56 2026 -0500
+
+    WIP mono port
+
+diff --git a/AmongUs.props b/AmongUs.props
+index 5c6e8c4..0d231c4 100644
+--- a/AmongUs.props
++++ b/AmongUs.props
+@@ -1,10 +1,9 @@
+ <Project>
+     <ItemGroup>
+-        <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.735" Private="false" ExcludeAssets="runtime;native" />
+-        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2025.4.15" PrivateAssets="all" />
++        <PackageReference Include="BepInEx.Unity.Mono" Version="6.0.0-be.735" Private="false" ExcludeAssets="runtime;native" />
++        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2026.6.5" PrivateAssets="all" />
+ 
+         <PackageReference Include="BepInEx.AutoPlugin" Version="1.1.0" PrivateAssets="all" />
+-        <PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.1.0-rc.1" PrivateAssets="all" ExcludeAssets="runtime" />
+     </ItemGroup>
+ 
+     <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
+diff --git a/Reactor.Benchmarks/AssetBundleBenchmarks.cs b/Reactor.Benchmarks/AssetBundleBenchmarks.cs
+index 120b899..8d31c0c 100644
+--- a/Reactor.Benchmarks/AssetBundleBenchmarks.cs
++++ b/Reactor.Benchmarks/AssetBundleBenchmarks.cs
+@@ -5,7 +5,6 @@ using BenchmarkDotNet.Attributes;
+ using BenchmarkDotNet.Configs;
+ using BenchmarkDotNet.Jobs;
+ using BepInEx;
+-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+ using Reactor.Utilities;
+ using Reactor.Utilities.Extensions;
+ using UnityEngine;
+@@ -56,7 +55,7 @@ public class AssetBundleBenchmarks
+     public AssetBundle LoadFromStream()
+     {
+         using var stream = GetResourceStream();
+-        return LoadAll(AssetBundle.LoadFromStream(stream.AsIl2Cpp()));
++        return LoadAll(AssetBundle.LoadFromStream(stream.AsUnity()));
+     }
+ 
+     [Benchmark]
+@@ -71,10 +70,10 @@ public class AssetBundleBenchmarks
+     {
+         using var stream = GetResourceStream();
+         var array = stream.ReadFully();
+-        var il2CppArray = new Il2CppStructArray<byte>(array.Length);
+-        fixed (byte* arrayPtr = array) { Buffer.MemoryCopy(arrayPtr, IntPtr.Add(il2CppArray.Pointer, 4 * IntPtr.Size).ToPointer(), il2CppArray.Length, array.Length); }
++        var UnityArray = new UnityStructArray<byte>(array.Length);
++        fixed (byte* arrayPtr = array) { Buffer.MemoryCopy(arrayPtr, IntPtr.Add(UnityArray.Pointer, 4 * IntPtr.Size).ToPointer(), UnityArray.Length, array.Length); }
+ 
+-        return LoadAll(AssetBundle.LoadFromMemory(il2CppArray));
++        return LoadAll(AssetBundle.LoadFromMemory(UnityArray));
+     }
+ 
+     [Benchmark]
+@@ -83,7 +82,7 @@ public class AssetBundleBenchmarks
+         using var stream = GetResourceStream();
+         var length = (int) stream.Length;
+ 
+-        var array = new Il2CppStructArray<byte>(length);
++        var array = new UnityStructArray<byte>(length);
+         if (stream.Read(array.ToSpan()) < length) throw new IOException("Failed to read in full");
+ 
+         return LoadAll(AssetBundle.LoadFromMemory(array));
+diff --git a/Reactor.Benchmarks/BenchmarksPlugin.cs b/Reactor.Benchmarks/BenchmarksPlugin.cs
+index d10641b..12e0edc 100644
+--- a/Reactor.Benchmarks/BenchmarksPlugin.cs
++++ b/Reactor.Benchmarks/BenchmarksPlugin.cs
+@@ -1,14 +1,14 @@
+ using System.Diagnostics;
+ using BenchmarkDotNet.Running;
+ using BepInEx;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ 
+ namespace Reactor.Benchmarks;
+ 
+ [BepInAutoPlugin("gg.reactor.benchmarks")]
+ [BepInProcess("Among Us.exe")]
+ [BepInDependency(ReactorPlugin.Id)]
+-public partial class BenchmarksPlugin : BasePlugin
++public partial class BenchmarksPlugin : BaseUnityPlugin
+ {
+     public override void Load()
+     {
+diff --git a/Reactor.Debugger/DebuggerPlugin.cs b/Reactor.Debugger/DebuggerPlugin.cs
+index 9ce45d8..c111c2e 100644
+--- a/Reactor.Debugger/DebuggerPlugin.cs
++++ b/Reactor.Debugger/DebuggerPlugin.cs
+@@ -1,6 +1,6 @@
+ global using static Reactor.Utilities.Logger<Reactor.Debugger.DebuggerPlugin>;
+ using BepInEx;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ using HarmonyLib;
+ using Reactor.Debugger.AutoJoin;
+ using Reactor.Debugger.Patches;
+@@ -11,7 +11,7 @@ namespace Reactor.Debugger;
+ [BepInAutoPlugin("gg.reactor.debugger")]
+ [BepInProcess("Among Us.exe")]
+ [BepInDependency(ReactorPlugin.Id)]
+-public partial class DebuggerPlugin : BasePlugin
++public partial class DebuggerPlugin : BaseUnityPlugin
+ {
+     public Harmony Harmony { get; } = new(Id);
+ 
+diff --git a/Reactor.Debugger/Patches/GameOptionsPatches.cs b/Reactor.Debugger/Patches/GameOptionsPatches.cs
+index 834bd9a..3d3b192 100644
+--- a/Reactor.Debugger/Patches/GameOptionsPatches.cs
++++ b/Reactor.Debugger/Patches/GameOptionsPatches.cs
+@@ -1,9 +1,8 @@
+ using System.Linq;
+ using AmongUs.GameOptions;
+ using HarmonyLib;
+-using Il2CppInterop.Runtime;
+-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+-using Il2CppSystem.Reflection;
++using UnityInterop.Runtime;
++using UnitySystem.Reflection;
+ using UnityEngine;
+ 
+ namespace Reactor.Debugger.Patches;
+@@ -13,11 +12,11 @@ internal static class GameOptionsPatches
+ {
+     public static void Initialize()
+     {
+-        var maxImpostors = (Il2CppStructArray<int>) Enumerable.Repeat((int) byte.MaxValue, byte.MaxValue).ToArray();
++        var maxImpostors = (UnityStructArray<int>) Enumerable.Repeat((int) byte.MaxValue, byte.MaxValue).ToArray();
+         NormalGameOptionsV09.MaxImpostors = maxImpostors;
+         NormalGameOptionsV09.MaxImpostors = maxImpostors;
+ 
+-        var minPlayers = (Il2CppStructArray<int>) Enumerable.Repeat(1, byte.MaxValue).ToArray();
++        var minPlayers = (UnityStructArray<int>) Enumerable.Repeat(1, byte.MaxValue).ToArray();
+         NormalGameOptionsV09.MinPlayers = minPlayers;
+         NormalGameOptionsV09.MinPlayers = minPlayers;
+     }
+@@ -26,7 +25,7 @@ internal static class GameOptionsPatches
+     [HarmonyPrefix]
+     public static void UnlockAllOptions(GameSettingMenu __instance)
+     {
+-        __instance.GameSettingsTab.HideForOnline = new Il2CppReferenceArray<Transform>(0);
++        __instance.GameSettingsTab.HideForOnline = new UnityReferenceArray<Transform>(0);
+     }
+ 
+     [HarmonyPatch(typeof(NumberOption), nameof(NumberOption.SetUpFromData))]
+@@ -40,11 +39,11 @@ internal static class GameOptionsPatches
+     [HarmonyPatch(typeof(CreateOptionsPicker), nameof(CreateOptionsPicker.SetImpostorButtons))]
+     public static class DisableImpostorCountReset
+     {
+-        private static readonly MethodInfo _refreshMethod = Il2CppType.Of<CreateOptionsPicker>().GetMethod("Refresh", BindingFlags.Public | BindingFlags.Instance);
++        private static readonly MethodInfo _refreshMethod = UnityType.Of<CreateOptionsPicker>().GetMethod("Refresh", BindingFlags.Public | BindingFlags.Instance);
+ 
+         public static bool Prefix()
+         {
+-            foreach (var stackFrame in new Il2CppSystem.Diagnostics.StackTrace().GetFrames())
++            foreach (var stackFrame in new UnitySystem.Diagnostics.StackTrace().GetFrames())
+             {
+                 if (_refreshMethod.Equals(stackFrame.GetMethod()))
+                 {
+diff --git a/Reactor.Debugger/Patches/RedirectLoggerPatch.cs b/Reactor.Debugger/Patches/RedirectLoggerPatch.cs
+index 13154f1..a22dba6 100644
+--- a/Reactor.Debugger/Patches/RedirectLoggerPatch.cs
++++ b/Reactor.Debugger/Patches/RedirectLoggerPatch.cs
+@@ -1,8 +1,8 @@
++/*
+ using System.Globalization;
+ using System.Text;
+ using BepInEx.Logging;
+ using HarmonyLib;
+-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+ 
+ namespace Reactor.Debugger.Patches;
+ 
+@@ -13,7 +13,7 @@ internal static class RedirectLoggerPatch
+ 
+     private static bool Enabled => DebuggerConfig.RedirectLogger.Value;
+ 
+-    private static void Log(Logger logger, LogLevel level, Il2CppStringArray? path, Il2CppSystem.Object message, UnityEngine.Object? context = null)
++    private static void Log(Logger logger, LogLevel level, UnityStringArray? path, UnitySystem.Object message, UnityEngine.Object? context = null)
+     {
+         var finalMessage = new StringBuilder();
+ 
+@@ -34,81 +34,82 @@ internal static class RedirectLoggerPatch
+             }
+         }
+ 
+-        if (context != null) finalMessage.Append(CultureInfo.InvariantCulture, $"[{context.name} ({context.GetIl2CppType().FullName})] ");
++        if (context != null) finalMessage.Append(CultureInfo.InvariantCulture, $"[{context.name} ({context.GetUnityType().FullName})] ");
+         finalMessage.Append(message.ToString());
+ 
+         _log.Log(level, finalMessage);
+     }
+ 
+-    [HarmonyPatch(nameof(Logger.Debug), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
++    [HarmonyPatch(nameof(Logger.Debug), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
+     [HarmonyPrefix]
+-    public static bool DebugPatch(Logger __instance, Il2CppSystem.Object message, UnityEngine.Object? context)
++    public static bool DebugPatch(Logger __instance, UnitySystem.Object message, UnityEngine.Object? context)
+     {
+         if (!Enabled) return true;
+         Log(__instance, LogLevel.Debug, null, message, context);
+         return false;
+     }
+ 
+-    [HarmonyPatch(nameof(Logger.Info), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
++    [HarmonyPatch(nameof(Logger.Info), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
+     [HarmonyPrefix]
+-    public static bool InfoPatch(Logger __instance, Il2CppSystem.Object message, UnityEngine.Object? context)
++    public static bool InfoPatch(Logger __instance, UnitySystem.Object message, UnityEngine.Object? context)
+     {
+         if (!Enabled) return true;
+         Log(__instance, LogLevel.Info, null, message, context);
+         return false;
+     }
+ 
+-    [HarmonyPatch(nameof(Logger.Warning), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
++    [HarmonyPatch(nameof(Logger.Warning), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
+     [HarmonyPrefix]
+-    public static bool WarningPatch(Logger __instance, Il2CppSystem.Object message, UnityEngine.Object? context)
++    public static bool WarningPatch(Logger __instance, UnitySystem.Object message, UnityEngine.Object? context)
+     {
+         if (!Enabled) return true;
+         Log(__instance, LogLevel.Warning, null, message, context);
+         return false;
+     }
+ 
+-    [HarmonyPatch(nameof(Logger.Error), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
++    [HarmonyPatch(nameof(Logger.Error), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
+     [HarmonyPrefix]
+-    public static bool ErrorPatch(Logger __instance, Il2CppSystem.Object message, UnityEngine.Object? context)
++    public static bool ErrorPatch(Logger __instance, UnitySystem.Object message, UnityEngine.Object? context)
+     {
+         if (!Enabled) return true;
+         Log(__instance, LogLevel.Error, null, message, context);
+         return false;
+     }
+ 
+-    [HarmonyPatch(nameof(Logger.Debug), typeof(Il2CppStringArray), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
++    [HarmonyPatch(nameof(Logger.Debug), typeof(UnityStringArray), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
+     [HarmonyPrefix]
+-    public static bool DebugPatch(Logger __instance, Il2CppStringArray? path, Il2CppSystem.Object message, UnityEngine.Object? context)
++    public static bool DebugPatch(Logger __instance, UnityStringArray? path, UnitySystem.Object message, UnityEngine.Object? context)
+     {
+         if (!Enabled) return true;
+         Log(__instance, LogLevel.Debug, path, message, context);
+         return false;
+     }
+ 
+-    [HarmonyPatch(nameof(Logger.Info), typeof(Il2CppStringArray), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
++    [HarmonyPatch(nameof(Logger.Info), typeof(UnityStringArray), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
+     [HarmonyPrefix]
+-    public static bool InfoPatch(Logger __instance, Il2CppStringArray? path, Il2CppSystem.Object message, UnityEngine.Object? context)
++    public static bool InfoPatch(Logger __instance, UnityStringArray? path, UnitySystem.Object message, UnityEngine.Object? context)
+     {
+         if (!Enabled) return true;
+         Log(__instance, LogLevel.Info, path, message, context);
+         return false;
+     }
+ 
+-    [HarmonyPatch(nameof(Logger.Warning), typeof(Il2CppStringArray), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
++    [HarmonyPatch(nameof(Logger.Warning), typeof(UnityStringArray), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
+     [HarmonyPrefix]
+-    public static bool WarningPatch(Logger __instance, Il2CppStringArray? path, Il2CppSystem.Object message, UnityEngine.Object? context)
++    public static bool WarningPatch(Logger __instance, UnityStringArray? path, UnitySystem.Object message, UnityEngine.Object? context)
+     {
+         if (!Enabled) return true;
+         Log(__instance, LogLevel.Warning, path, message, context);
+         return false;
+     }
+ 
+-    [HarmonyPatch(nameof(Logger.Error), typeof(Il2CppStringArray), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
++    [HarmonyPatch(nameof(Logger.Error), typeof(UnityStringArray), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
+     [HarmonyPrefix]
+-    public static bool ErrorPatch(Logger __instance, Il2CppStringArray? path, Il2CppSystem.Object message, UnityEngine.Object? context)
++    public static bool ErrorPatch(Logger __instance, UnityStringArray? path, UnitySystem.Object message, UnityEngine.Object? context)
+     {
+         if (!Enabled) return true;
+         Log(__instance, LogLevel.Error, path, message, context);
+         return false;
+     }
+ }
++*/
+diff --git a/Reactor.Debugger/Utilities/Extensions.cs b/Reactor.Debugger/Utilities/Extensions.cs
+index 6eabac9..839f384 100644
+--- a/Reactor.Debugger/Utilities/Extensions.cs
++++ b/Reactor.Debugger/Utilities/Extensions.cs
+@@ -1,6 +1,6 @@
+ using System;
+ using System.Collections;
+-using Il2CppInterop.Runtime;
++using UnityInterop.Runtime;
+ using InnerNet;
+ 
+ namespace Reactor.Debugger.Utilities;
+@@ -32,10 +32,10 @@ internal static class Extensions
+ 
+             client.SetEndpoint(Constants.LocalNetAddress, Constants.GamePlayPort, false);
+         }
+-        catch (Il2CppException e)
++        catch (UnityException e)
+         {
+             Error(e);
+-            DisconnectPopup.Instance.ShowCustom(e.Message[..e.Message.IndexOf("\n--- BEGIN IL2CPP STACK TRACE ---\n", StringComparison.Ordinal)]);
++            DisconnectPopup.Instance.ShowCustom(e.Message[..e.Message.IndexOf("\n--- BEGIN Unity STACK TRACE ---\n", StringComparison.Ordinal)]);
+             MatchMaker.Instance.NotConnecting();
+             yield break;
+         }
+diff --git a/Reactor.Debugger/Window/DebuggerWindow.cs b/Reactor.Debugger/Window/DebuggerWindow.cs
+index cd154e8..1c67c0c 100644
+--- a/Reactor.Debugger/Window/DebuggerWindow.cs
++++ b/Reactor.Debugger/Window/DebuggerWindow.cs
+@@ -2,9 +2,9 @@ using System;
+ using System.Collections;
+ using System.Linq;
+ using AmongUs.Data;
+-using BepInEx.Unity.IL2CPP.Utils;
+-using Il2CppInterop.Runtime.Attributes;
+-using Il2CppInterop.Runtime.InteropTypes;
++using BepInEx.Unity.Mono.Utils;
++using UnityInterop.Runtime.Attributes;
++using UnityInterop.Runtime.InteropTypes;
+ using Reactor.Debugger.Utilities;
+ using Reactor.Debugger.Window.Tabs;
+ using Reactor.Utilities.Attributes;
+@@ -13,12 +13,12 @@ using UnityEngine;
+ 
+ namespace Reactor.Debugger.Window;
+ 
+-[RegisterInIl2Cpp]
++[RegisterInUnity]
+ internal sealed class DebuggerWindow : MonoBehaviour
+ {
+     private readonly DragWindow _window;
+ 
+-    [HideFromIl2Cpp]
++    
+     public BaseTab[] Tabs { get; } =
+     {
+         new ConfigTab(),
+@@ -26,7 +26,7 @@ internal sealed class DebuggerWindow : MonoBehaviour
+         new AutoJoinTab(),
+     };
+ 
+-    [HideFromIl2Cpp]
++    
+     public BaseTab SelectedTab { get; private set; }
+ 
+     public DebuggerWindow(IntPtr ptr) : base(ptr)
+@@ -41,7 +41,7 @@ internal sealed class DebuggerWindow : MonoBehaviour
+ 
+             if (GUILayout.Button("Hard crash"))
+             {
+-                static unsafe void Corrupt(Il2CppObjectBase o)
++                static unsafe void Corrupt(UnityObjectBase o)
+                 {
+                     var x = (IntPtr*) o.Pointer;
+                     x[0] = (IntPtr) 0xF00;
+diff --git a/Reactor.Debugger/Window/Tabs/AutoJoinTab.cs b/Reactor.Debugger/Window/Tabs/AutoJoinTab.cs
+index 1de7203..7504354 100644
+--- a/Reactor.Debugger/Window/Tabs/AutoJoinTab.cs
++++ b/Reactor.Debugger/Window/Tabs/AutoJoinTab.cs
+@@ -1,4 +1,4 @@
+-using BepInEx.Unity.IL2CPP.Utils;
++using BepInEx.Unity.Mono.Utils;
+ using Reactor.Debugger.AutoJoin;
+ using Reactor.Debugger.Utilities;
+ using UnityEngine;
+diff --git a/Reactor.Debugger/Window/Tabs/GameTab.cs b/Reactor.Debugger/Window/Tabs/GameTab.cs
+index ff2bb9f..eb344c6 100644
+--- a/Reactor.Debugger/Window/Tabs/GameTab.cs
++++ b/Reactor.Debugger/Window/Tabs/GameTab.cs
+@@ -1,5 +1,4 @@
+ using AmongUs.GameOptions;
+-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+ using UnityEngine;
+ using Object = UnityEngine.Object;
+ 
+@@ -92,6 +91,6 @@ internal sealed class GameTab : BaseTab
+         playerControl.SetNamePlate(HatManager.Instance.allNamePlates[playerId % HatManager.Instance.allNamePlates.Count].ProdId);
+         data.PlayerLevel = playerId;
+ 
+-        data.RpcSetTasks(new Il2CppStructArray<byte>(0));
++        data.RpcSetTasks(new UnityStructArray<byte>(0));
+     }
+ }
+diff --git a/Reactor.Example/ExamplePlugin.cs b/Reactor.Example/ExamplePlugin.cs
+index c14e8b9..9ec4f58 100644
+--- a/Reactor.Example/ExamplePlugin.cs
++++ b/Reactor.Example/ExamplePlugin.cs
+@@ -1,7 +1,7 @@
+ using System;
+ using BepInEx;
+-using BepInEx.Unity.IL2CPP;
+-using Il2CppInterop.Runtime.Attributes;
++using BepInEx.Unity.Mono;
++using UnityInterop.Runtime.Attributes;
+ using Reactor.Localization;
+ using Reactor.Localization.Utilities;
+ using Reactor.Networking;
+@@ -19,7 +19,7 @@ namespace Reactor.Example;
+ [BepInProcess("Among Us.exe")]
+ [BepInDependency(ReactorPlugin.Id)]
+ [ReactorModFlags(ModFlags.RequireOnAllClients)]
+-public partial class ExamplePlugin : BasePlugin
++public partial class ExamplePlugin : BaseUnityPlugin
+ {
+     private static StringNames _helloStringName;
+ 
+@@ -33,10 +33,10 @@ public partial class ExamplePlugin : BasePlugin
+         LocalizationManager.Register(new ExampleLocalizationProvider());
+     }
+ 
+-    [RegisterInIl2Cpp]
++    [RegisterInUnity]
+     public class ExampleComponent : MonoBehaviour
+     {
+-        [HideFromIl2Cpp]
++        
+         public DragWindow TestWindow { get; }
+ 
+         public ExampleComponent(IntPtr ptr) : base(ptr)
+diff --git a/Reactor/Localization/LocalizationManager.cs b/Reactor/Localization/LocalizationManager.cs
+index 6f12b09..e0d39ea 100644
+--- a/Reactor/Localization/LocalizationManager.cs
++++ b/Reactor/Localization/LocalizationManager.cs
+@@ -1,5 +1,4 @@
+ ﻿using System.Collections.Generic;
+-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+ 
+ namespace Reactor.Localization;
+ 
+@@ -43,7 +42,7 @@ public static class LocalizationManager
+         _providers.Remove(provider);
+     }
+ 
+-    internal static bool TryGetTextFormatted(StringNames stringName, Il2CppReferenceArray<Il2CppSystem.Object> parts, out string text)
++    internal static bool TryGetTextFormatted(StringNames stringName, UnityReferenceArray<UnitySystem.Object> parts, out string text)
+     {
+         foreach (var provider in _providers)
+         {
+diff --git a/Reactor/Localization/LocalizationProvider.cs b/Reactor/Localization/LocalizationProvider.cs
+index ef341a3..360e9cb 100644
+--- a/Reactor/Localization/LocalizationProvider.cs
++++ b/Reactor/Localization/LocalizationProvider.cs
+@@ -1,5 +1,4 @@
+-﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
+-using Reactor.Utilities;
++﻿using Reactor.Utilities;
+ 
+ namespace Reactor.Localization;
+ 
+@@ -42,11 +41,11 @@ public abstract class LocalizationProvider
+     /// <param name="parts">The arguments used for formatting.</param>
+     /// <param name="result">The <see cref="string"/> representation of the given <see cref="StringNames"/>.</param>
+     /// <returns>Whether or not this <see cref="LocalizationProvider"/> can handle this <see cref="StringNames"/>.</returns>
+-    public virtual bool TryGetTextFormatted(StringNames stringName, Il2CppReferenceArray<Il2CppSystem.Object> parts, out string? result)
++    public virtual bool TryGetTextFormatted(StringNames stringName, UnityReferenceArray<UnitySystem.Object> parts, out string? result)
+     {
+         if (!TryGetText(stringName, out result)) return false;
+ 
+-        result = Il2CppSystem.String.Format(result, parts);
++        result = UnitySystem.String.Format(result, parts);
+         return true;
+     }
+ 
+diff --git a/Reactor/Localization/Patches/GetStringPatch.cs b/Reactor/Localization/Patches/GetStringPatch.cs
+index aa765c5..dbc0ca1 100644
+--- a/Reactor/Localization/Patches/GetStringPatch.cs
++++ b/Reactor/Localization/Patches/GetStringPatch.cs
+@@ -1,15 +1,14 @@
+ ﻿using HarmonyLib;
+-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+ 
+ namespace Reactor.Localization.Patches;
+ 
+ [HarmonyPatch]
+ internal static class GetStringPatch
+ {
+-    [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetString), typeof(StringNames), typeof(Il2CppReferenceArray<Il2CppSystem.Object>))]
+-    [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetStringWithDefault), typeof(StringNames), typeof(string), typeof(Il2CppReferenceArray<Il2CppSystem.Object>))]
++    [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetString), typeof(StringNames), typeof(UnityReferenceArray<UnitySystem.Object>))]
++    [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetStringWithDefault), typeof(StringNames), typeof(string), typeof(UnityReferenceArray<UnitySystem.Object>))]
+     [HarmonyPrefix]
+-    public static bool StringNamesPatch(StringNames id, Il2CppReferenceArray<Il2CppSystem.Object> parts, out string __result)
++    public static bool StringNamesPatch(StringNames id, Array<Object> parts, out string __result)
+     {
+         if (LocalizationManager.TryGetTextFormatted(id, parts, out __result))
+         {
+diff --git a/Reactor/Networking/Attributes/MessageConverterAttribute.cs b/Reactor/Networking/Attributes/MessageConverterAttribute.cs
+index 3efd3b9..b6b03b7 100644
+--- a/Reactor/Networking/Attributes/MessageConverterAttribute.cs
++++ b/Reactor/Networking/Attributes/MessageConverterAttribute.cs
+@@ -1,7 +1,7 @@
+ using System;
+ using System.Collections.Generic;
+ using System.Reflection;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ using HarmonyLib;
+ using Reactor.Networking.Serialization;
+ 
+@@ -50,7 +50,7 @@ public sealed class MessageConverterAttribute : Attribute
+ 
+     internal static void Initialize()
+     {
+-        IL2CPPChainloader.Instance.PluginLoad += (_, assembly, _) => Register(assembly);
+-        IL2CPPChainloader.Instance.Finished += MessageSerializer.ClearMaps;
++        UnityChainloader.Instance.PluginLoad += (_, assembly, _) => Register(assembly);
++        UnityChainloader.Instance.Finished += MessageSerializer.ClearMaps;
+     }
+ }
+diff --git a/Reactor/Networking/Attributes/MethodRpcAttribute.cs b/Reactor/Networking/Attributes/MethodRpcAttribute.cs
+index b0fa1b0..05a343f 100644
+--- a/Reactor/Networking/Attributes/MethodRpcAttribute.cs
++++ b/Reactor/Networking/Attributes/MethodRpcAttribute.cs
+@@ -2,7 +2,7 @@ using System;
+ using System.Collections.Generic;
+ using System.Linq;
+ using System.Reflection;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ using HarmonyLib;
+ using Hazel;
+ using Reactor.Networking.Rpc;
+@@ -54,7 +54,7 @@ public sealed class MethodRpcAttribute : Attribute
+     /// <remarks>This is called automatically on plugin assemblies so you probably don't need to call this.</remarks>
+     /// <param name="assembly">The assembly to search.</param>
+     /// <param name="plugin">The plugin to register the rpc to.</param>
+-    public static void Register(Assembly assembly, BasePlugin plugin)
++    public static void Register(Assembly assembly, BaseUnityPlugin plugin)
+     {
+         if (_registeredAssemblies.Contains(assembly)) return;
+         _registeredAssemblies.Add(assembly);
+@@ -84,6 +84,6 @@ public sealed class MethodRpcAttribute : Attribute
+ 
+     internal static void Initialize()
+     {
+-        IL2CPPChainloader.Instance.PluginLoad += (_, assembly, plugin) => Register(assembly, plugin);
++        UnityChainloader.Instance.PluginLoad += (_, assembly, plugin) => Register(assembly, plugin);
+     }
+ }
+diff --git a/Reactor/Networking/Attributes/RegisterCustomRpcAttribute.cs b/Reactor/Networking/Attributes/RegisterCustomRpcAttribute.cs
+index 74d94f9..68936d6 100644
+--- a/Reactor/Networking/Attributes/RegisterCustomRpcAttribute.cs
++++ b/Reactor/Networking/Attributes/RegisterCustomRpcAttribute.cs
+@@ -1,7 +1,7 @@
+ using System;
+ using System.Collections.Generic;
+ using System.Reflection;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ using HarmonyLib;
+ using Reactor.Networking.Rpc;
+ using Reactor.Utilities;
+@@ -36,7 +36,7 @@ public sealed class RegisterCustomRpcAttribute : Attribute
+     /// <remarks>This is called automatically on plugin assemblies so you probably don't need to call this.</remarks>
+     /// <param name="assembly">The assembly to search.</param>
+     /// <param name="plugin">The plugin to register the rpc to.</param>
+-    public static void Register(Assembly assembly, BasePlugin plugin)
++    public static void Register(Assembly assembly, BaseUnityPlugin plugin)
+     {
+         if (_registeredAssemblies.Contains(assembly)) return;
+         _registeredAssemblies.Add(assembly);
+@@ -60,6 +60,6 @@ public sealed class RegisterCustomRpcAttribute : Attribute
+ 
+     internal static void Initialize()
+     {
+-        IL2CPPChainloader.Instance.PluginLoad += (_, assembly, plugin) => Register(assembly, plugin);
++        UnityChainloader.Instance.PluginLoad += (_, assembly, plugin) => Register(assembly, plugin);
+     }
+ }
+diff --git a/Reactor/Networking/ModList.cs b/Reactor/Networking/ModList.cs
+index 005f68c..fd41f93 100644
+--- a/Reactor/Networking/ModList.cs
++++ b/Reactor/Networking/ModList.cs
+@@ -4,7 +4,7 @@ using System.Globalization;
+ using System.Linq;
+ using System.Text;
+ using BepInEx;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ using Hazel;
+ using Reactor.Networking.Attributes;
+ using Reactor.Networking.Patches;
+@@ -97,7 +97,7 @@ public static class ModList
+     {
+         if (ReactorConnection.Instance != null) throw new InvalidOperationException("Can't refresh the mod list during a connection");
+ 
+-        Current = IL2CPPChainloader.Instance.Plugins.Values
++        Current = UnityChainloader.Instance.Plugins.Values
+             .Select(pluginInfo => GetById(pluginInfo.Metadata.GUID))
+             .OrderByDescending(x => x.Id == ReactorPlugin.Id)
+             .ThenBy(x => x.Id, StringComparer.Ordinal)
+@@ -130,7 +130,7 @@ public static class ModList
+         Debug(debug.ToString());
+     }
+ 
+-    private static void OnPluginLoad(PluginInfo pluginInfo, BasePlugin plugin)
++    private static void OnPluginLoad(PluginInfo pluginInfo, BaseUnityPlugin plugin)
+     {
+         var pluginType = plugin.GetType();
+ 
+@@ -147,14 +147,14 @@ public static class ModList
+ 
+     internal static void Initialize()
+     {
+-        foreach (var existingPlugin in IL2CPPChainloader.Instance.Plugins.Values)
++        foreach (var existingPlugin in UnityChainloader.Instance.Plugins.Values)
+         {
+             if (existingPlugin.Instance == null) continue;
+-            OnPluginLoad(existingPlugin, (BasePlugin) existingPlugin.Instance);
++            OnPluginLoad(existingPlugin, (BaseUnityPlugin) existingPlugin.Instance);
+         }
+ 
+-        IL2CPPChainloader.Instance.PluginLoad += (pluginInfo, _, plugin) => OnPluginLoad(pluginInfo, plugin);
++        UnityChainloader.Instance.PluginLoad += (pluginInfo, _, plugin) => OnPluginLoad(pluginInfo, plugin);
+ 
+-        IL2CPPChainloader.Instance.Finished += Refresh;
++        UnityChainloader.Instance.Finished += Refresh;
+     }
+ }
+diff --git a/Reactor/Networking/Patches/ClientPatches.cs b/Reactor/Networking/Patches/ClientPatches.cs
+index a9c9f6b..e7c9518 100644
+--- a/Reactor/Networking/Patches/ClientPatches.cs
++++ b/Reactor/Networking/Patches/ClientPatches.cs
+@@ -3,12 +3,11 @@ using System.Linq;
+ using System.Reflection;
+ using AmongUs.Data;
+ using AmongUs.InnerNet.GameDataMessages;
+-using BepInEx.Unity.IL2CPP.Utils;
++using BepInEx.Unity.Mono.Utils;
+ using HarmonyLib;
+ using Hazel;
+-using Il2CppInterop.Runtime;
+-using Il2CppInterop.Runtime.InteropTypes;
+-using Il2CppInterop.Runtime.InteropTypes.Arrays;
++using UnityInterop.Runtime;
++using UnityInterop.Runtime.InteropTypes;
+ using InnerNet;
+ using Reactor.Networking.Extensions;
+ using Reactor.Networking.Messages;
+@@ -41,7 +40,7 @@ internal static class ClientPatches
+             return Il2CppStateMachineWrapper<InnerNetClient>.GetStateMachineMoveNext(nameof(InnerNetClient.HandleGameDataInner))!;
+         }
+ 
+-        public static bool Prefix(Il2CppObjectBase __instance, ref bool __result)
++        public static bool Prefix(UnityObjectBase __instance, ref bool __result)
+         {
+             var wrapper = new Il2CppStateMachineWrapper<InnerNetClient>(__instance);
+ 
+@@ -180,7 +179,7 @@ internal static class ClientPatches
+             return Il2CppStateMachineWrapper<InnerNetClient>.GetStateMachineMoveNext(nameof(InnerNetClient.CoSendSceneChange))!;
+         }
+ 
+-        public static bool Prefix(Il2CppObjectBase __instance, ref bool __result)
++        public static bool Prefix(UnityObjectBase __instance, ref bool __result)
+         {
+             var wrapper = new Il2CppStateMachineWrapper<InnerNetClient>(__instance);
+ 
+@@ -236,7 +235,7 @@ internal static class ClientPatches
+             return Il2CppStateMachineWrapper<InnerNetClient>.GetStateMachineMoveNext(nameof(InnerNetClient.CoHandleSpawn))!;
+         }
+ 
+-        public static void Postfix(Il2CppObjectBase __instance, bool __result)
++        public static void Postfix(UnityObjectBase __instance, bool __result)
+         {
+             if (ReactorConnection.Instance!.Syncer != Syncer.Host) return;
+ 
+@@ -274,7 +273,7 @@ internal static class ClientPatches
+             }
+ 
+             // PATCH - Inject ReactorHandshakeS2C
+-            if (AmongUsClient.Instance.ClientId != __instance.ownerId && __instance.NetObjectType == Il2CppType.Of<PlayerControl>())
++            if (AmongUsClient.Instance.ClientId != __instance.ownerId && __instance.NetObjectType == UnityType.Of<PlayerControl>())
+             {
+                 Debug("Injecting ReactorHandshakeS2C to WriteSpawnMessage");
+                 ReactorHeader.Write(msg);
+@@ -356,7 +355,7 @@ internal static class ClientPatches
+             useDtlsLayout = AmongUsClient.Instance.useDtls;
+         }
+ 
+-        public static void Postfix(ref Il2CppStructArray<byte> __result)
++        public static void Postfix(ref UnityStructArray<byte> __result)
+         {
+             var handshake = new MessageWriter(1000);
+ 
+diff --git a/Reactor/Networking/Rpc/CustomRpc.cs b/Reactor/Networking/Rpc/CustomRpc.cs
+index fe161eb..2a02d24 100644
+--- a/Reactor/Networking/Rpc/CustomRpc.cs
++++ b/Reactor/Networking/Rpc/CustomRpc.cs
+@@ -1,5 +1,5 @@
+ using System;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ using Hazel;
+ using InnerNet;
+ 
+@@ -11,7 +11,7 @@ namespace Reactor.Networking.Rpc;
+ /// <typeparam name="TPlugin">The type of the plugin the the rpc is attached to.</typeparam>
+ /// <typeparam name="TInnerNetObject">The type of the <see cref="InnerNetObject"/>.</typeparam>
+ /// <typeparam name="TData">The type of the rpc data.</typeparam>
+-public abstract class CustomRpc<TPlugin, TInnerNetObject, TData> : UnsafeCustomRpc where TPlugin : BasePlugin where TInnerNetObject : InnerNetObject
++public abstract class CustomRpc<TPlugin, TInnerNetObject, TData> : UnsafeCustomRpc where TPlugin : BaseUnityPlugin where TInnerNetObject : InnerNetObject
+ {
+     /// <inheritdoc />
+     protected CustomRpc(TPlugin plugin, uint id) : base(plugin, id)
+@@ -81,7 +81,7 @@ public abstract class CustomRpc<TPlugin, TInnerNetObject, TData> : UnsafeCustomR
+ /// </summary>
+ /// <typeparam name="TPlugin">The type of the plugin the the rpc is attached to.</typeparam>
+ /// <typeparam name="TInnerNetObject">The type of the <see cref="InnerNetObject"/>.</typeparam>
+-public abstract class CustomRpc<TPlugin, TInnerNetObject> : UnsafeCustomRpc where TPlugin : BasePlugin where TInnerNetObject : InnerNetObject
++public abstract class CustomRpc<TPlugin, TInnerNetObject> : UnsafeCustomRpc where TPlugin : BaseUnityPlugin where TInnerNetObject : InnerNetObject
+ {
+     /// <inheritdoc />
+     protected CustomRpc(TPlugin plugin, uint id) : base(plugin, id)
+diff --git a/Reactor/Networking/Rpc/CustomRpcManager.cs b/Reactor/Networking/Rpc/CustomRpcManager.cs
+index de260ee..d8693c4 100644
+--- a/Reactor/Networking/Rpc/CustomRpcManager.cs
++++ b/Reactor/Networking/Rpc/CustomRpcManager.cs
+@@ -4,7 +4,7 @@ using System.Linq;
+ using System.Reflection;
+ using HarmonyLib;
+ using Hazel;
+-using Il2CppInterop.Generator.Extensions;
++using UnityInterop.Generator.Extensions;
+ using InnerNet;
+ using Reactor.Utilities;
+ 
+diff --git a/Reactor/Networking/Rpc/MethodRpc.cs b/Reactor/Networking/Rpc/MethodRpc.cs
+index 4901635..4527493 100644
+--- a/Reactor/Networking/Rpc/MethodRpc.cs
++++ b/Reactor/Networking/Rpc/MethodRpc.cs
+@@ -4,7 +4,7 @@ using System.Linq;
+ using System.Reflection;
+ using System.Reflection.Emit;
+ using System.Runtime.InteropServices;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ using HarmonyLib;
+ using Hazel;
+ using InnerNet;
+@@ -32,7 +32,7 @@ public class MethodRpc : UnsafeCustomRpc
+     /// <param name="id">The id of the rpc.</param>
+     /// <param name="option">The send option of the rpc.</param>
+     /// <param name="localHandling">The local handling method of the rpc.</param>
+-    public MethodRpc(BasePlugin plugin, MethodInfo method, uint id, SendOption option, RpcLocalHandling localHandling) : base(plugin, id)
++    public MethodRpc(BaseUnityPlugin plugin, MethodInfo method, uint id, SendOption option, RpcLocalHandling localHandling) : base(plugin, id)
+     {
+         Method = method;
+         LocalHandling = localHandling;
+@@ -79,7 +79,7 @@ public class MethodRpc : UnsafeCustomRpc
+     /// <param name="localHandling">The local handling method of the rpc.</param>
+     /// <param name="sendImmediately">The value indicating whether the rpc should be sent immediately.</param>
+     [Obsolete("Non-immediate RPCs were removed in 2025.5.20. All RPCs are immediate. Remove sendImmediately from the parameter list.")]
+-    public MethodRpc(BasePlugin plugin, MethodInfo method, uint id, SendOption option, RpcLocalHandling localHandling, bool sendImmediately)
++    public MethodRpc(BaseUnityPlugin plugin, MethodInfo method, uint id, SendOption option, RpcLocalHandling localHandling, bool sendImmediately)
+         : this(plugin, method, id, option, localHandling)
+     {
+         SendImmediately = sendImmediately;
+diff --git a/Reactor/Networking/Rpc/PlayerCustomRpc.cs b/Reactor/Networking/Rpc/PlayerCustomRpc.cs
+index 47c9d8a..8701f45 100644
+--- a/Reactor/Networking/Rpc/PlayerCustomRpc.cs
++++ b/Reactor/Networking/Rpc/PlayerCustomRpc.cs
+@@ -1,5 +1,5 @@
+ using System;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ 
+ namespace Reactor.Networking.Rpc;
+ 
+@@ -8,7 +8,7 @@ namespace Reactor.Networking.Rpc;
+ /// </summary>
+ /// <typeparam name="TPlugin">The type of the plugin the the rpc is attached to.</typeparam>
+ /// <typeparam name="TData">The type of the rpc data.</typeparam>
+-public abstract class PlayerCustomRpc<TPlugin, TData> : CustomRpc<TPlugin, PlayerControl, TData> where TPlugin : BasePlugin
++public abstract class PlayerCustomRpc<TPlugin, TData> : CustomRpc<TPlugin, PlayerControl, TData> where TPlugin : BaseUnityPlugin
+ {
+     /// <inheritdoc />
+     protected PlayerCustomRpc(TPlugin plugin, uint id) : base(plugin, id)
+@@ -42,7 +42,7 @@ public abstract class PlayerCustomRpc<TPlugin, TData> : CustomRpc<TPlugin, Playe
+ /// Shorthand for <see cref="CustomRpc{TPlugin,TInnerNetObject}"/> with <see cref="PlayerControl"/> as the TInnerNetObject.
+ /// </summary>
+ /// <typeparam name="TPlugin">The type of the plugin the the rpc is attached to.</typeparam>
+-public abstract class PlayerCustomRpc<TPlugin> : CustomRpc<TPlugin, PlayerControl> where TPlugin : BasePlugin
++public abstract class PlayerCustomRpc<TPlugin> : CustomRpc<TPlugin, PlayerControl> where TPlugin : BaseUnityPlugin
+ {
+     /// <inheritdoc />
+     protected PlayerCustomRpc(TPlugin plugin, uint id) : base(plugin, id)
+diff --git a/Reactor/Networking/Rpc/UnsafeCustomRpc.cs b/Reactor/Networking/Rpc/UnsafeCustomRpc.cs
+index 67fefb4..48d7fd9 100644
+--- a/Reactor/Networking/Rpc/UnsafeCustomRpc.cs
++++ b/Reactor/Networking/Rpc/UnsafeCustomRpc.cs
+@@ -1,13 +1,12 @@
+ using System;
+ using System.Collections.Concurrent;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ using HarmonyLib;
+ using Hazel;
+ using Hazel.Udp;
+-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+ using InnerNet;
+ using Reactor.Utilities;
+-using Buffer = Il2CppSystem.Buffer;
++using Buffer = UnitySystem.Buffer;
+ 
+ namespace Reactor.Networking.Rpc;
+ 
+@@ -31,7 +30,7 @@ public abstract class UnsafeCustomRpc
+     /// <summary>
+     /// Gets the plugin of the rpc.
+     /// </summary>
+-    public BasePlugin UnsafePlugin { get; }
++    public BaseUnityPlugin UnsafePlugin { get; }
+ 
+     /// <summary>
+     /// Gets the mod of the rpc.
+@@ -58,7 +57,7 @@ public abstract class UnsafeCustomRpc
+     /// </summary>
+     /// <param name="plugin">The plugin that the rpc is attached to.</param>
+     /// <param name="id">The id of the rpc.</param>
+-    protected UnsafeCustomRpc(BasePlugin plugin, uint id)
++    protected UnsafeCustomRpc(BaseUnityPlugin plugin, uint id)
+     {
+         UnsafePlugin = plugin;
+         Mod = ModList.GetByPluginType(plugin.GetType());
+@@ -140,7 +139,7 @@ public abstract class UnsafeCustomRpc
+         }
+     }
+ 
+-    private static ConcurrentDictionary<MessageWriter, Action> AckCallbacks { get; } = new(Il2CppEqualityComparer<MessageWriter>.Instance);
++    private static ConcurrentDictionary<MessageWriter, Action> AckCallbacks { get; } = new(UnityEqualityComparer<MessageWriter>.Instance);
+ 
+     [HarmonyPatch(typeof(UdpConnection), nameof(UdpConnection.Send))]
+     private static class MessageAckPatch
+@@ -151,8 +150,8 @@ public abstract class UnsafeCustomRpc
+ 
+             if (msg.SendOption == SendOption.Reliable && AckCallbacks.TryRemove(msg, out var ackCallback))
+             {
+-                var buffer = new Il2CppStructArray<byte>(msg.Length);
+-                Buffer.BlockCopy(new Il2CppSystem.Array(msg.Buffer.Pointer), 0, new Il2CppSystem.Array(buffer.Pointer), 0, msg.Length);
++                var buffer = new UnityStructArray<byte>(msg.Length);
++                Buffer.BlockCopy(new UnitySystem.Array(msg.Buffer.Pointer), 0, new UnitySystem.Array(buffer.Pointer), 0, msg.Length);
+ 
+                 __instance.ResetKeepAliveTimer();
+ 
+diff --git a/Reactor/Patches/ReactorVersionShower.cs b/Reactor/Patches/ReactorVersionShower.cs
+index 6c102f1..5617066 100644
+--- a/Reactor/Patches/ReactorVersionShower.cs
++++ b/Reactor/Patches/ReactorVersionShower.cs
+@@ -1,6 +1,6 @@
+ using System;
+ using BepInEx;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ using Reactor.Utilities;
+ using Reactor.Utilities.Extensions;
+ using TMPro;
+@@ -97,7 +97,7 @@ public static class ReactorVersionShower
+         if (Text == null) return;
+         Text.text = "Reactor " + Version.Parse(ReactorPlugin.Version).WithoutBuild();
+         Text.text += "\nBepInEx " + Paths.BepInExVersion.WithoutBuild();
+-        Text.text += "\nMods: " + IL2CPPChainloader.Instance.Plugins.Count;
++        Text.text += "\nMods: " + UnityChainloader.Instance.Plugins.Count;
+ 
+         var creditsText = ReactorCredits.GetText(ReactorCredits.Location.MainMenu);
+         if (creditsText != null)
+diff --git a/Reactor/ReactorPlugin.cs b/Reactor/ReactorPlugin.cs
+index df51844..a8b546e 100644
+--- a/Reactor/ReactorPlugin.cs
++++ b/Reactor/ReactorPlugin.cs
+@@ -1,9 +1,9 @@
+-global using static Reactor.Utilities.Logger<Reactor.ReactorPlugin>;
+ using System;
+ using BepInEx;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Logging;
++using BepInEx.Unity.Mono;
++using BepInEx.Unity.Mono.Bootstrap;
+ using HarmonyLib;
+-using Il2CppInterop.Runtime.Attributes;
+ using Reactor.Localization;
+ using Reactor.Localization.Providers;
+ using Reactor.Networking;
+@@ -23,13 +23,15 @@ namespace Reactor;
+ /// </summary>
+ [BepInAutoPlugin("gg.reactor.api")]
+ [BepInProcess("Among Us.exe")]
+-public partial class ReactorPlugin : BasePlugin
++public partial class ReactorPlugin : BaseUnityPlugin
+ {
+     /// <summary>
+     /// Gets harmony instance.
+     /// </summary>
+     public Harmony Harmony { get; } = new(Id);
+ 
++    public static ManualLogSource LogSource;
++
+     /// <summary>
+     /// Gets custom rpc manager.
+     /// </summary>
+@@ -40,12 +42,13 @@ public partial class ReactorPlugin : BasePlugin
+     /// <inheritdoc />
+     public ReactorPlugin()
+     {
+-        Log.LogMessage($"Among Us {Application.version} {Constants.GetCurrentPlatformName()}");
++        LogSource = Logger;
++        Logger.LogMessage($"Among Us {Application.version} {Application.platform}");
+ 
+         PluginSingleton<ReactorPlugin>.Instance = this;
+-        PluginSingleton<BasePlugin>.Initialize();
++        PluginSingleton<BaseUnityPlugin>.Initialize();
+ 
+-        RegisterInIl2CppAttribute.Initialize();
++        RegisterInUnityAttribute.Initialize();
+         ModList.Initialize();
+ 
+         RegisterCustomRpcAttribute.Initialize();
+@@ -55,58 +58,49 @@ public partial class ReactorPlugin : BasePlugin
+         LocalizationManager.Register(new HardCodedLocalizationProvider());
+     }
+ 
+-    /// <inheritdoc />
+-    public override void Load()
++    internal void Awake()
+     {
+         ReactorConfig.Bind(Config);
+ 
+         Harmony.PatchAll();
+ 
+-        this.AddComponent<ReactorComponent>().Plugin = this;
+-        this.AddComponent<Coroutines.Component>();
+-        this.AddComponent<Dispatcher>();
++        this.gameObject.AddComponent<ReactorComponent>().Plugin = this;
++        this.gameObject.AddComponent<Coroutines.Component>();
++        this.gameObject.AddComponent<Dispatcher>();
+ 
+         ReactorVersionShower.Initialize();
+         FreeNamePatch.Initialize();
+         DefaultBundle.Load();
+ 
+-        SceneManager.add_sceneLoaded((Action<Scene, LoadSceneMode>) ((scene, _) =>
++        SceneManager.sceneLoaded += (Action<Scene, LoadSceneMode>) ((scene, _) =>
+         {
+             if (scene.name == "MainMenu")
+             {
+                 ModManager.Instance.ShowModStamp();
+             }
+-        }));
++        });
+     }
+ 
+-    /// <inheritdoc />
+-    public override bool Unload()
++    internal void OnDestroy()
+     {
+         Harmony.UnpatchSelf();
+         RegionInfoWatcher.Dispose();
+-
+-        return base.Unload();
+     }
+ 
+-    [RegisterInIl2Cpp]
++    [RegisterInUnity]
+     private sealed class ReactorComponent : MonoBehaviour
+     {
+-        [HideFromIl2Cpp]
+         public ReactorPlugin? Plugin { get; internal set; }
+ 
+-        public ReactorComponent(IntPtr ptr) : base(ptr)
+-        {
+-        }
+-
+         private void Update()
+         {
+             if (Input.GetKeyDown(KeyCode.F5))
+             {
+-                Plugin!.Log.LogInfo("Reloading all configs");
++                Plugin!.Logger.LogInfo("Reloading all configs");
+ 
+-                foreach (var pluginInfo in IL2CPPChainloader.Instance.Plugins.Values)
++                foreach (var pluginInfo in UnityChainloader.Instance.Plugins.Values)
+                 {
+-                    var config = ((BasePlugin) pluginInfo.Instance).Config;
++                    var config = ((BaseUnityPlugin) pluginInfo.Instance).Config;
+                     if (config.Count == 0)
+                     {
+                         continue;
+@@ -118,7 +112,7 @@ public partial class ReactorPlugin : BasePlugin
+                     }
+                     catch (Exception e)
+                     {
+-                        Plugin.Log.LogWarning($"Exception occured during reload of {pluginInfo.Metadata.Name}: {e}");
++                        Plugin!.Logger.LogWarning($"Exception occured during reload of {pluginInfo.Metadata.Name}: {e}");
+                     }
+                 }
+             }
+diff --git a/Reactor/Utilities/AssetBundleManager.cs b/Reactor/Utilities/AssetBundleManager.cs
+index afc86cd..d82fcce 100644
+--- a/Reactor/Utilities/AssetBundleManager.cs
++++ b/Reactor/Utilities/AssetBundleManager.cs
+@@ -4,8 +4,6 @@ using System.IO;
+ using System.Linq;
+ using System.Reflection;
+ using System.Runtime.InteropServices;
+-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+-using Reactor.Utilities.Extensions;
+ using UnityEngine;
+ 
+ namespace Reactor.Utilities;
+@@ -91,7 +89,7 @@ public static class AssetBundleManager
+             var filePath = Path.Combine(pluginDirectoryPath, fileName);
+             if (File.Exists(filePath))
+             {
+-                Debug($"Loading an asset bundle from {filePath}");
++                ReactorPlugin.LogSource.LogDebug($"Loading an asset bundle from {filePath}");
+                 path = filePath;
+                 return true;
+             }
+@@ -101,17 +99,17 @@ public static class AssetBundleManager
+         return false;
+     }
+ 
+-    private static bool TryLoadResource(Assembly assembly, string fileName, [NotNullWhen(true)] out Il2CppStructArray<byte>? data)
++    private static bool TryLoadResource(Assembly assembly, string fileName, [NotNullWhen(true)] out UnityStructArray<byte>? data)
+     {
+         var resourceName = assembly.GetManifestResourceNames().SingleOrDefault(n => n.EndsWith(fileName, StringComparison.Ordinal));
+         if (resourceName != null)
+         {
+-            Debug($"Loading an asset bundle from {resourceName}");
++            ReactorPlugin.LogSource.LogDebug($"Loading an asset bundle from {resourceName}");
+ 
+             using var stream = assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException("Resource stream was null");
+ 
+             var length = (int) stream.Length;
+-            data = new Il2CppStructArray<byte>(length);
++            data = new UnityStructArray<byte>(length);
+             if (stream.Read(data.ToSpan()) < length) throw new IOException("Failed to read in full");
+ 
+             return true;
+diff --git a/Reactor/Utilities/Attributes/RegisterInIl2CppAttribute.cs b/Reactor/Utilities/Attributes/RegisterInIl2CppAttribute.cs
+index 0235d3f..1b08bd5 100644
+--- a/Reactor/Utilities/Attributes/RegisterInIl2CppAttribute.cs
++++ b/Reactor/Utilities/Attributes/RegisterInIl2CppAttribute.cs
+@@ -1,58 +1,58 @@
+ using System;
+ using System.Collections.Generic;
+ using System.Reflection;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ using HarmonyLib;
+-using Il2CppInterop.Runtime.Injection;
++using UnityInterop.Runtime.Injection;
+ 
+ namespace Reactor.Utilities.Attributes;
+ 
+ /// <summary>
+-/// Automatically registers an il2cpp type using <see cref="ClassInjector.RegisterTypeInIl2Cpp{T}()"/>.
++/// Automatically registers an Unity type using <see cref="ClassInjector.RegisterTypeInUnity{T}()"/>.
+ /// </summary>
+ [AttributeUsage(AttributeTargets.Class)]
+-public sealed class RegisterInIl2CppAttribute : Attribute
++public sealed class RegisterInUnityAttribute : Attribute
+ {
+     private static readonly HashSet<Assembly> _registeredAssemblies = new();
+ 
+     /// <summary>
+-    /// Gets il2cpp interfaces to be injected with this type.
++    /// Gets Unity interfaces to be injected with this type.
+     /// </summary>
+     public Type[] Interfaces { get; }
+ 
+     /// <summary>
+-    /// Initializes a new instance of the <see cref="RegisterInIl2CppAttribute"/> class without any interfaces.
++    /// Initializes a new instance of the <see cref="RegisterInUnityAttribute"/> class without any interfaces.
+     /// </summary>
+-    public RegisterInIl2CppAttribute()
++    public RegisterInUnityAttribute()
+     {
+         Interfaces = Type.EmptyTypes;
+     }
+ 
+     /// <summary>
+-    /// Initializes a new instance of the <see cref="RegisterInIl2CppAttribute"/> class with interfaces.
++    /// Initializes a new instance of the <see cref="RegisterInUnityAttribute"/> class with interfaces.
+     /// </summary>
+-    /// <param name="interfaces">Il2Cpp interfaces to be injected with this type.</param>
+-    public RegisterInIl2CppAttribute(params Type[] interfaces)
++    /// <param name="interfaces">Unity interfaces to be injected with this type.</param>
++    public RegisterInUnityAttribute(params Type[] interfaces)
+     {
+         Interfaces = interfaces;
+     }
+ 
+     private static void RegisterType(Type type, Type[] interfaces)
+     {
+-        var baseTypeAttribute = type.BaseType?.GetCustomAttribute<RegisterInIl2CppAttribute>();
++        var baseTypeAttribute = type.BaseType?.GetCustomAttribute<RegisterInUnityAttribute>();
+         if (baseTypeAttribute != null)
+         {
+             RegisterType(type.BaseType!, baseTypeAttribute.Interfaces);
+         }
+ 
+-        if (ClassInjector.IsTypeRegisteredInIl2Cpp(type))
++        if (ClassInjector.IsTypeRegisteredInUnity(type))
+         {
+             return;
+         }
+ 
+         try
+         {
+-            ClassInjector.RegisterTypeInIl2Cpp(type, new RegisterTypeOptions { Interfaces = interfaces });
++            ClassInjector.RegisterTypeInUnity(type, new RegisterTypeOptions { Interfaces = interfaces });
+         }
+         catch (Exception e)
+         {
+@@ -61,7 +61,7 @@ public sealed class RegisterInIl2CppAttribute : Attribute
+     }
+ 
+     /// <summary>
+-    /// Registers all Il2Cpp types annotated with <see cref="RegisterInIl2CppAttribute"/> in the specified <paramref name="assembly"/>.
++    /// Registers all Unity types annotated with <see cref="RegisterInUnityAttribute"/> in the specified <paramref name="assembly"/>.
+     /// </summary>
+     /// <remarks>This is called automatically on plugin assemblies so you probably don't need to call this.</remarks>
+     /// <param name="assembly">The assembly to search.</param>
+@@ -72,7 +72,7 @@ public sealed class RegisterInIl2CppAttribute : Attribute
+ 
+         foreach (var type in assembly.GetTypes())
+         {
+-            var attribute = type.GetCustomAttribute<RegisterInIl2CppAttribute>();
++            var attribute = type.GetCustomAttribute<RegisterInUnityAttribute>();
+             if (attribute != null)
+             {
+                 RegisterType(type, attribute.Interfaces);
+@@ -82,6 +82,6 @@ public sealed class RegisterInIl2CppAttribute : Attribute
+ 
+     internal static void Initialize()
+     {
+-        IL2CPPChainloader.Instance.PluginLoad += (_, assembly, _) => Register(assembly);
++        UnityChainloader.Instance.PluginLoad += (_, assembly, _) => Register(assembly);
+     }
+ }
+diff --git a/Reactor/Utilities/Coroutines.cs b/Reactor/Utilities/Coroutines.cs
+index 326a813..a271d90 100644
+--- a/Reactor/Utilities/Coroutines.cs
++++ b/Reactor/Utilities/Coroutines.cs
+@@ -2,7 +2,7 @@ using System;
+ using System.Collections;
+ using System.Diagnostics.CodeAnalysis;
+ using System.Runtime.CompilerServices;
+-using BepInEx.Unity.IL2CPP.Utils;
++using BepInEx.Unity.Mono.Utils;
+ using Reactor.Utilities.Attributes;
+ using UnityEngine;
+ 
+@@ -13,7 +13,7 @@ namespace Reactor.Utilities;
+ /// </summary>
+ public static class Coroutines
+ {
+-    [RegisterInIl2Cpp]
++    [RegisterInUnity]
+     internal sealed class Component : MonoBehaviour
+     {
+         internal static Component? Instance { get; set; }
+diff --git a/Reactor/Utilities/Dispatcher.cs b/Reactor/Utilities/Dispatcher.cs
+index 7e5f25b..b593934 100644
+--- a/Reactor/Utilities/Dispatcher.cs
++++ b/Reactor/Utilities/Dispatcher.cs
+@@ -1,6 +1,6 @@
+ using System;
+ using System.Collections.Generic;
+-using Il2CppInterop.Runtime.Attributes;
++using UnityInterop.Runtime.Attributes;
+ using Reactor.Utilities.Attributes;
+ using UnityEngine;
+ 
+@@ -9,7 +9,7 @@ namespace Reactor.Utilities;
+ /// <summary>
+ /// Dispatches actions on Unity main thread.
+ /// </summary>
+-[RegisterInIl2Cpp]
++[RegisterInUnity]
+ public sealed class Dispatcher : MonoBehaviour
+ {
+     /// <summary>
+@@ -39,7 +39,7 @@ public sealed class Dispatcher : MonoBehaviour
+     /// Enqueues an <paramref name="action"/>.
+     /// </summary>
+     /// <param name="action">The action to enqueue.</param>
+-    [HideFromIl2Cpp]
++    
+     public void Enqueue(Action action)
+     {
+         lock (_queue)
+diff --git a/Reactor/Utilities/Extensions/AssetBundleExtensions.cs b/Reactor/Utilities/Extensions/AssetBundleExtensions.cs
+index 000c63a..9a5badd 100644
+--- a/Reactor/Utilities/Extensions/AssetBundleExtensions.cs
++++ b/Reactor/Utilities/Extensions/AssetBundleExtensions.cs
+@@ -1,4 +1,4 @@
+-using Il2CppInterop.Runtime;
++using UnityInterop.Runtime;
+ using UnityEngine;
+ 
+ namespace Reactor.Utilities.Extensions;
+@@ -17,6 +17,6 @@ public static class AssetBundleExtensions
+     /// <returns>The loaded asset or null if it wasn't found.</returns>
+     public static T? LoadAsset<T>(this AssetBundle bundle, string name) where T : Object
+     {
+-        return bundle.LoadAsset(name, Il2CppType.Of<T>())?.Cast<T>();
++        return bundle.LoadAsset(name, UnityType.Of<T>())?.Cast<T>();
+     }
+ }
+diff --git a/Reactor/Utilities/Extensions/Il2CppInteropExtensions.cs b/Reactor/Utilities/Extensions/Il2CppInteropExtensions.cs
+index 41f58ed..4f5e8b8 100644
+--- a/Reactor/Utilities/Extensions/Il2CppInteropExtensions.cs
++++ b/Reactor/Utilities/Extensions/Il2CppInteropExtensions.cs
+@@ -1,20 +1,19 @@
+ using System;
+-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+ 
+ namespace Reactor.Utilities.Extensions;
+ 
+ /// <summary>
+-/// Provides extension methods for Il2CppInterop.
++/// Provides extension methods for UnityInterop.
+ /// </summary>
+-public static class Il2CppInteropExtensions
++public static class UnityInteropExtensions
+ {
+     /// <summary>
+-    /// Creates a span over a <see cref="Il2CppStructArray{T}"/>.
++    /// Creates a span over a <see cref="UnityStructArray{T}"/>.
+     /// </summary>
+     /// <param name="array">The array to create a span over.</param>
+-    /// <typeparam name="T">The type of items in the <see cref="Il2CppStructArray{T}"/>.</typeparam>
++    /// <typeparam name="T">The type of items in the <see cref="UnityStructArray{T}"/>.</typeparam>
+     /// <returns>A span.</returns>
+-    public static unsafe Span<T> ToSpan<T>(this Il2CppStructArray<T> array) where T : unmanaged
++    public static unsafe Span<T> ToSpan<T>(this UnityStructArray<T> array) where T : unmanaged
+     {
+         return new Span<T>(IntPtr.Add(array.Pointer, IntPtr.Size * 4).ToPointer(), array.Length);
+     }
+diff --git a/Reactor/Utilities/Extensions/ReflectionExtensions.cs b/Reactor/Utilities/Extensions/ReflectionExtensions.cs
+index 0eeb8b7..4852237 100644
+--- a/Reactor/Utilities/Extensions/ReflectionExtensions.cs
++++ b/Reactor/Utilities/Extensions/ReflectionExtensions.cs
+@@ -3,13 +3,13 @@ using System.Collections.Generic;
+ using System.Linq;
+ using System.Reflection;
+ using HarmonyLib;
+-using Il2CppInterop.Common;
+-using Il2CppInterop.Common.Attributes;
+-using Il2CppInterop.Runtime;
+-using Il2CppSystem.Runtime.CompilerServices;
+-using Il2CppCustomAttributeExtensions = Il2CppSystem.Reflection.CustomAttributeExtensions;
+-using Il2CppMethodInfo = Il2CppSystem.Reflection.MethodInfo;
+-using Il2CppSystemType = Il2CppSystem.Type;
++using UnityInterop.Common;
++using UnityInterop.Common.Attributes;
++using UnityInterop.Runtime;
++using UnitySystem.Runtime.CompilerServices;
++using UnityCustomAttributeExtensions = UnitySystem.Reflection.CustomAttributeExtensions;
++using UnityMethodInfo = UnitySystem.Reflection.MethodInfo;
++using UnitySystemType = UnitySystem.Type;
+ using MethodInfo = System.Reflection.MethodInfo;
+ 
+ namespace Reactor.Utilities.Extensions;
+@@ -20,38 +20,38 @@ namespace Reactor.Utilities.Extensions;
+ public static class ReflectionExtensions
+ {
+     /// <summary>
+-    /// Gets a <see cref="Il2CppMethodInfo"/> for the specified <see cref="MethodInfo"/>.
++    /// Gets a <see cref="UnityMethodInfo"/> for the specified <see cref="MethodInfo"/>.
+     /// </summary>
+     /// <param name="methodInfo">The <see cref="MethodInfo"/>.</param>
+-    /// <returns>A <see cref="Il2CppMethodInfo"/>.</returns>
+-    public static Il2CppMethodInfo ToIl2CppMethodInfo(this MethodInfo methodInfo)
++    /// <returns>A <see cref="UnityMethodInfo"/>.</returns>
++    public static UnityMethodInfo ToUnityMethodInfo(this MethodInfo methodInfo)
+     {
+-        var il2CppMethodField = Il2CppInteropUtils.GetIl2CppMethodInfoPointerFieldForGeneratedMethod(methodInfo);
+-        if (il2CppMethodField == null) throw new ArgumentException($"'{methodInfo.Name}' is not an il2cpp method", nameof(methodInfo));
+-        var il2CppMethod = (IntPtr) il2CppMethodField.GetValue(null)!;
++        var UnityMethodField = UnityInteropUtils.GetUnityMethodInfoPointerFieldForGeneratedMethod(methodInfo);
++        if (UnityMethodField == null) throw new ArgumentException($"'{methodInfo.Name}' is not an Unity method", nameof(methodInfo));
++        var UnityMethod = (IntPtr) UnityMethodField.GetValue(null)!;
+ 
+-        return new Il2CppMethodInfo(IL2CPP.il2cpp_method_get_object(il2CppMethod, IntPtr.Zero));
++        return new UnityMethodInfo(Unity.Unity_method_get_object(UnityMethod, IntPtr.Zero));
+     }
+ 
+     /// <summary>
+-    /// Gets enumerator's MoveNext type for the specified <see cref="Il2CppMethodInfo"/>.
++    /// Gets enumerator's MoveNext type for the specified <see cref="UnityMethodInfo"/>.
+     /// </summary>
+-    /// <param name="methodInfo">The enumerator <see cref="Il2CppMethodInfo"/>.</param>
+-    /// <returns>A <see cref="Il2CppSystemType"/> for enumerator's MoveNext type.</returns>
+-    public static Il2CppSystemType GetEnumeratorMoveNextType(this Il2CppMethodInfo methodInfo)
++    /// <param name="methodInfo">The enumerator <see cref="UnityMethodInfo"/>.</param>
++    /// <returns>A <see cref="UnitySystemType"/> for enumerator's MoveNext type.</returns>
++    public static UnitySystemType GetEnumeratorMoveNextType(this UnityMethodInfo methodInfo)
+     {
+-        var customAttribute = Il2CppCustomAttributeExtensions.GetCustomAttribute(methodInfo, Il2CppType.Of<IteratorStateMachineAttribute>()).TryCast<IteratorStateMachineAttribute>();
++        var customAttribute = UnityCustomAttributeExtensions.GetCustomAttribute(methodInfo, UnityType.Of<IteratorStateMachineAttribute>()).TryCast<IteratorStateMachineAttribute>();
+         if (customAttribute == null) throw new ArgumentException($"'{methodInfo.Name}' is not an enumerator method", nameof(methodInfo));
+ 
+         return customAttribute._StateMachineType_k__BackingField;
+     }
+ 
+     /// <summary>
+-    /// Gets a <see cref="Type"/> for the specified <see cref="Il2CppSystemType"/>.
++    /// Gets a <see cref="Type"/> for the specified <see cref="UnitySystemType"/>.
+     /// </summary>
+-    /// <param name="type">The <see cref="Il2CppSystemType"/>.</param>
++    /// <param name="type">The <see cref="UnitySystemType"/>.</param>
+     /// <returns>A <see cref="Type"/>.</returns>
+-    public static Type ToSystemType(this Il2CppSystemType type)
++    public static Type ToSystemType(this UnitySystemType type)
+     {
+         var result = Type.GetType(type.AssemblyQualifiedName);
+         if (result != null) return result;
+@@ -77,7 +77,7 @@ public static class ReflectionExtensions
+     /// <returns>A <see cref="MethodInfo"/>.</returns>
+     public static MethodInfo EnumeratorMoveNext(Type type, string methodName)
+     {
+-        return AccessTools.Method(AccessTools.Method(type, methodName).ToIl2CppMethodInfo().GetEnumeratorMoveNextType().ToSystemType(), "MoveNext");
++        return AccessTools.Method(AccessTools.Method(type, methodName).ToUnityMethodInfo().GetEnumeratorMoveNextType().ToSystemType(), "MoveNext");
+     }
+ 
+     /// <summary>
+diff --git a/Reactor/Utilities/Extensions/StreamExtensions.cs b/Reactor/Utilities/Extensions/StreamExtensions.cs
+index 2536fab..d5682e2 100644
+--- a/Reactor/Utilities/Extensions/StreamExtensions.cs
++++ b/Reactor/Utilities/Extensions/StreamExtensions.cs
+@@ -1,9 +1,8 @@
+ using System;
+ using System.IO;
+ using System.Runtime.CompilerServices;
+-using Il2CppInterop.Runtime.Attributes;
+-using Il2CppInterop.Runtime.Injection;
+-using Il2CppInterop.Runtime.InteropTypes.Arrays;
++using UnityInterop.Runtime.Attributes;
++using UnityInterop.Runtime.Injection;
+ using Reactor.Utilities.Attributes;
+ 
+ namespace Reactor.Utilities.Extensions;
+@@ -14,10 +13,10 @@ namespace Reactor.Utilities.Extensions;
+ public static class StreamExtensions
+ {
+     /// <summary>
+-    /// Provides a <see cref="Il2CppSystem.IO.Stream"/> which uses <see cref="System.IO.Stream"/> under the hood.
++    /// Provides a <see cref="UnitySystem.IO.Stream"/> which uses <see cref="System.IO.Stream"/> under the hood.
+     /// </summary>
+-    [RegisterInIl2Cpp]
+-    public class StreamWrapper : Il2CppSystem.IO.Stream
++    [RegisterInUnity]
++    public class StreamWrapper : UnitySystem.IO.Stream
+     {
+         private readonly Stream _stream;
+ 
+@@ -34,22 +33,22 @@ public static class StreamExtensions
+             _stream = stream;
+         }
+ 
+-        [HideFromIl2Cpp]
++        
+         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+-        private static unsafe Span<byte> GetSpan(Il2CppStructArray<byte> buffer, int offset, int count)
++        private static unsafe Span<byte> GetSpan(UnityStructArray<byte> buffer, int offset, int count)
+         {
+             var rawBuffer = (byte*) buffer.Pointer + 4 * IntPtr.Size;
+             return new Span<byte>(rawBuffer + offset, count);
+         }
+ 
+         /// <inheritdoc />
+-        public override int Read(Il2CppStructArray<byte> buffer, int offset, int count)
++        public override int Read(UnityStructArray<byte> buffer, int offset, int count)
+         {
+             return _stream.Read(GetSpan(buffer, offset, count));
+         }
+ 
+         /// <inheritdoc />
+-        public override void Write(Il2CppStructArray<byte> buffer, int offset, int count)
++        public override void Write(UnityStructArray<byte> buffer, int offset, int count)
+         {
+             _stream.Write(GetSpan(buffer, offset, count));
+         }
+@@ -73,13 +72,13 @@ public static class StreamExtensions
+         }
+ 
+         /// <inheritdoc />
+-        public override long Seek(long offset, Il2CppSystem.IO.SeekOrigin origin)
++        public override long Seek(long offset, UnitySystem.IO.SeekOrigin origin)
+         {
+             return _stream.Seek(offset, origin switch
+             {
+-                Il2CppSystem.IO.SeekOrigin.Begin => SeekOrigin.Begin,
+-                Il2CppSystem.IO.SeekOrigin.Current => SeekOrigin.Current,
+-                Il2CppSystem.IO.SeekOrigin.End => SeekOrigin.End,
++                UnitySystem.IO.SeekOrigin.Begin => SeekOrigin.Begin,
++                UnitySystem.IO.SeekOrigin.Current => SeekOrigin.Current,
++                UnitySystem.IO.SeekOrigin.End => SeekOrigin.End,
+                 _ => throw new ArgumentOutOfRangeException(nameof(origin), origin, null),
+             });
+         }
+@@ -111,11 +110,11 @@ public static class StreamExtensions
+     }
+ 
+     /// <summary>
+-    /// Wraps a <see cref="System.IO.Stream"/> into a <see cref="Il2CppSystem.IO.Stream"/>.
++    /// Wraps a <see cref="System.IO.Stream"/> into a <see cref="UnitySystem.IO.Stream"/>.
+     /// </summary>
+     /// <param name="stream">The stream to wrap.</param>
+     /// <returns>A <see cref="StreamWrapper"/> for the specified <paramref name="stream"/>.</returns>
+-    public static StreamWrapper AsIl2Cpp(this Stream stream) => new(stream);
++    public static StreamWrapper AsUnity(this Stream stream) => new(stream);
+ 
+     /// <summary>
+     /// Fully reads the <paramref name="input"/> stream.
+diff --git a/Reactor/Utilities/Il2CppEqualityComparer.cs b/Reactor/Utilities/Il2CppEqualityComparer.cs
+index 8064c28..3a8bc15 100644
+--- a/Reactor/Utilities/Il2CppEqualityComparer.cs
++++ b/Reactor/Utilities/Il2CppEqualityComparer.cs
+@@ -1,26 +1,26 @@
+ using System.Collections.Generic;
+-using Il2CppSystem.Runtime.CompilerServices;
++using UnitySystem.Runtime.CompilerServices;
+ 
+ namespace Reactor.Utilities;
+ 
+ /// <inheritdoc />
+-public sealed class Il2CppEqualityComparer<T> : IEqualityComparer<T> where T : Il2CppSystem.Object
++public sealed class UnityEqualityComparer<T> : IEqualityComparer<T> where T : UnitySystem.Object
+ {
+-    private static Il2CppEqualityComparer<T>? _instance;
++    private static UnityEqualityComparer<T>? _instance;
+ 
+     /// <summary>
+     /// Gets the instance.
+     /// </summary>
+-    public static Il2CppEqualityComparer<T> Instance
++    public static UnityEqualityComparer<T> Instance
+     {
+         get
+         {
+-            _instance ??= new Il2CppEqualityComparer<T>();
++            _instance ??= new UnityEqualityComparer<T>();
+             return _instance;
+         }
+     }
+ 
+-    private Il2CppEqualityComparer()
++    private UnityEqualityComparer()
+     {
+     }
+ 
+diff --git a/Reactor/Utilities/Il2CppStateMachineWrapper.cs b/Reactor/Utilities/Il2CppStateMachineWrapper.cs
+index 0ece8f4..87bd16a 100644
+--- a/Reactor/Utilities/Il2CppStateMachineWrapper.cs
++++ b/Reactor/Utilities/Il2CppStateMachineWrapper.cs
+@@ -14,7 +14,7 @@ namespace Reactor.Utilities;
+ /// <typeparam name="T">The type of the parent class that owns the state machine.</typeparam>
+ public class Il2CppStateMachineWrapper<T> : Il2CppCompilerGeneratedObjectWrapper
+ {
+-    // normally it is fields, but IL2CPP turns them into properties
++    // normally it is fields, but Unity turns them into properties
+     private readonly PropertyInfo _thisProperty;
+     private readonly PropertyInfo _stateProperty;
+ 
+diff --git a/Reactor/Utilities/Logger.cs b/Reactor/Utilities/Logger.cs
+index 03e5e5d..ecc4d14 100644
+--- a/Reactor/Utilities/Logger.cs
++++ b/Reactor/Utilities/Logger.cs
+@@ -1,7 +1,8 @@
++/*
+ using System.Runtime.CompilerServices;
+ using BepInEx.Core.Logging.Interpolation;
+ using BepInEx.Logging;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ 
+ namespace Reactor.Utilities;
+ 
+@@ -9,12 +10,12 @@ namespace Reactor.Utilities;
+ /// Provides singleton access to plugins logger.
+ /// </summary>
+ /// <typeparam name="T">The type of the plugin.</typeparam>
+-public static class Logger<T> where T : BasePlugin
++public static class Logger<T> where T : BaseUnityPlugin
+ {
+     /// <summary>
+     /// Gets the instance.
+     /// </summary>
+-    public static ManualLogSource Instance => PluginSingleton<T>.Instance.Log;
++    public static ManualLogSource Instance => new(PluginSingleton<T>.Instance.name);
+ 
+     /// <inheritdoc cref="ManualLogSource.Log(BepInEx.Logging.LogLevel,object)"/>
+     public static void Log(LogLevel level, object data) => Instance.Log(level, data);
+@@ -58,3 +59,4 @@ public static class Logger<T> where T : BasePlugin
+     /// <inheritdoc cref="ManualLogSource.LogDebug(BepInExDebugLogInterpolatedStringHandler)"/>
+     public static void Debug(BepInExDebugLogInterpolatedStringHandler logHandler) => Instance.LogDebug(logHandler);
+ }
++*/
+diff --git a/Reactor/Utilities/PluginSingleton.cs b/Reactor/Utilities/PluginSingleton.cs
+index 0b4cf92..93ac1be 100644
+--- a/Reactor/Utilities/PluginSingleton.cs
++++ b/Reactor/Utilities/PluginSingleton.cs
+@@ -1,7 +1,8 @@
+ using System;
+ using System.Linq;
+ using System.Reflection;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
++using BepInEx.Unity.Mono.Bootstrap;
+ 
+ namespace Reactor.Utilities;
+ 
+@@ -9,7 +10,7 @@ namespace Reactor.Utilities;
+ /// Provides singleton access to plugins instance.
+ /// </summary>
+ /// <typeparam name="T">The type of the plugin.</typeparam>
+-public static class PluginSingleton<T> where T : BasePlugin
++public static class PluginSingleton<T> where T : BaseUnityPlugin
+ {
+     private static T? _instance;
+ 
+@@ -18,7 +19,7 @@ public static class PluginSingleton<T> where T : BasePlugin
+     /// </summary>
+     public static T Instance
+     {
+-        get => _instance ??= IL2CPPChainloader.Instance.Plugins.Values.Select(x => x.Instance).OfType<T>().Single();
++        get => _instance ??= UnityChainloader.Instance.Plugins.Values.Select(x => x.Instance).OfType<T>().Single();
+         set
+         {
+             if (_instance == value) return;
+@@ -29,7 +30,7 @@ public static class PluginSingleton<T> where T : BasePlugin
+ 
+     internal static void Initialize()
+     {
+-        IL2CPPChainloader.Instance.PluginLoad += (_, _, plugin) =>
++        UnityChainloader.Instance.PluginLoaded += plugin =>
+         {
+             typeof(PluginSingleton<>).MakeGenericType(plugin.GetType())
+                 .GetField(nameof(_instance), BindingFlags.Static | BindingFlags.NonPublic)!
+diff --git a/Reactor/Utilities/ReactorCredits.cs b/Reactor/Utilities/ReactorCredits.cs
+index 7a574c8..c7ac0d6 100644
+--- a/Reactor/Utilities/ReactorCredits.cs
++++ b/Reactor/Utilities/ReactorCredits.cs
+@@ -1,7 +1,7 @@
+ ﻿using System;
+ using System.Collections.Generic;
+ using System.Linq;
+-using BepInEx.Unity.IL2CPP;
++using BepInEx.Unity.Mono;
+ using Reactor.Patches;
+ using Reactor.Utilities.Extensions;
+ 
+@@ -98,9 +98,9 @@ public static class ReactorCredits
+     /// </summary>
+     /// <typeparam name="T">The BepInEx plugin type to get the name and version from.</typeparam>
+     /// <param name="shouldShow"><inheritdoc cref="Register(string,string,bool,System.Func{Location,bool})" path="/param[@name='shouldShow']"/></param>
+-    public static void Register<T>(Func<Location, bool>? shouldShow) where T : BasePlugin
++    public static void Register<T>(Func<Location, bool>? shouldShow) where T : BaseUnityPlugin
+     {
+-        var pluginInfo = IL2CPPChainloader.Instance.Plugins.Values.SingleOrDefault(p => p.TypeName == typeof(T).FullName)
++        var pluginInfo = UnityChainloader.Instance.Plugins.Values.SingleOrDefault(p => p.TypeName == typeof(T).FullName)
+                          ?? throw new ArgumentException("Couldn't find the metadata for the provided plugin type", nameof(T));
+ 
+         var metadata = pluginInfo.Metadata;
+diff --git a/Reactor/Utilities/UI/ReactorPopup.cs b/Reactor/Utilities/UI/ReactorPopup.cs
+index e69901b..1d7ebe9 100644
+--- a/Reactor/Utilities/UI/ReactorPopup.cs
++++ b/Reactor/Utilities/UI/ReactorPopup.cs
+@@ -1,4 +1,4 @@
+-using Il2CppInterop.Runtime.Attributes;
++using UnityInterop.Runtime.Attributes;
+ using Reactor.Utilities.Attributes;
+ using TMPro;
+ using UnityEngine;
+@@ -8,17 +8,17 @@ namespace Reactor.Utilities.UI;
+ /// <summary>
+ /// Wrapper over <see cref="GenericPopup"/> that adds hyperlink and controller support.
+ /// </summary>
+-[RegisterInIl2Cpp]
++[RegisterInUnity]
+ internal sealed class ReactorPopup : MonoBehaviour
+ {
+-    private readonly Il2CppSystem.Collections.Generic.List<SelectableHyperLink> _selectableHyperLinks = new();
++    private readonly UnitySystem.Collections.Generic.List<SelectableHyperLink> _selectableHyperLinks = new();
+ 
+     public GenericPopup Popup { get; private set; } = null!;
+     public TextMeshPro TextArea { get; private set; } = null!;
+     public PassiveButton BackButton { get; private set; } = null!;
+     public SpriteRenderer Background { get; private set; } = null!;
+ 
+-    [HideFromIl2Cpp]
++    
+     public void Show(string text)
+     {
+         Popup.Show(text);
+@@ -37,7 +37,7 @@ internal sealed class ReactorPopup : MonoBehaviour
+         ControllerManager.Instance.CloseOverlayMenu(name);
+     }
+ 
+-    [HideFromIl2Cpp]
++    
+     public static ReactorPopup Create(string name)
+     {
+         var genericPopup = Instantiate(DiscordManager.Instance.discordPopup, Camera.main!.transform);

@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using UnityInterop.Runtime;
 using InnerNet;
+using UnityEngine;
 
 namespace Reactor.Debugger.Utilities;
 

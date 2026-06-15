@@ -5,10 +5,10 @@ namespace Reactor.Localization.Patches;
 [HarmonyPatch]
 internal static class GetStringPatch
 {
-    [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetString), typeof(StringNames), typeof(UnityReferenceArray<UnitySystem.Object>))]
-    [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetStringWithDefault), typeof(StringNames), typeof(string), typeof(UnityReferenceArray<UnitySystem.Object>))]
+    [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetString), typeof(StringNames), typeof(object[]))]
+    [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetStringWithDefault), typeof(StringNames), typeof(string), typeof(object[]))]
     [HarmonyPrefix]
-    public static bool StringNamesPatch(StringNames id, Array<Object> parts, out string __result)
+    public static bool StringNamesPatch(StringNames id, object[] parts, out string __result)
     {
         if (LocalizationManager.TryGetTextFormatted(id, parts, out __result))
         {

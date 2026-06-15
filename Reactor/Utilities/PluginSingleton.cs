@@ -30,7 +30,7 @@ public static class PluginSingleton<T> where T : BaseUnityPlugin
 
     internal static void Initialize()
     {
-        UnityChainloader.Instance.PluginLoaded += plugin =>
+        PluginLoadHooks.PluginLoaded += (_, plugin) =>
         {
             typeof(PluginSingleton<>).MakeGenericType(plugin.GetType())
                 .GetField(nameof(_instance), BindingFlags.Static | BindingFlags.NonPublic)!

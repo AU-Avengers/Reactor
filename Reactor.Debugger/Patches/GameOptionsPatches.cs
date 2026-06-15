@@ -1,8 +1,8 @@
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using AmongUs.GameOptions;
 using HarmonyLib;
-using UnityInterop.Runtime;
-using UnitySystem.Reflection;
 using UnityEngine;
 
 namespace Reactor.Debugger.Patches;
@@ -12,20 +12,18 @@ internal static class GameOptionsPatches
 {
     public static void Initialize()
     {
-        var maxImpostors = (UnityStructArray<int>) Enumerable.Repeat((int) byte.MaxValue, byte.MaxValue).ToArray();
-        NormalGameOptionsV09.MaxImpostors = maxImpostors;
-        NormalGameOptionsV09.MaxImpostors = maxImpostors;
+        var maxImpostors = Enumerable.Repeat((int) byte.MaxValue, byte.MaxValue).ToArray();
+        AccessTools.Field(typeof(NormalGameOptionsV09), nameof(NormalGameOptionsV09.MaxImpostors)).SetValue(null, maxImpostors);
 
-        var minPlayers = (UnityStructArray<int>) Enumerable.Repeat(1, byte.MaxValue).ToArray();
-        NormalGameOptionsV09.MinPlayers = minPlayers;
-        NormalGameOptionsV09.MinPlayers = minPlayers;
+        var minPlayers = Enumerable.Repeat(1, byte.MaxValue).ToArray();
+        AccessTools.Field(typeof(NormalGameOptionsV09), nameof(NormalGameOptionsV09.MinPlayers)).SetValue(null, minPlayers);
     }
 
     [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Start))]
     [HarmonyPrefix]
     public static void UnlockAllOptions(GameSettingMenu __instance)
     {
-        __instance.GameSettingsTab.HideForOnline = new UnityReferenceArray<Transform>(0);
+        __instance.GameSettingsTab.HideForOnline = System.Array.Empty<Transform>();
     }
 
     [HarmonyPatch(typeof(NumberOption), nameof(NumberOption.SetUpFromData))]
@@ -39,11 +37,11 @@ internal static class GameOptionsPatches
     [HarmonyPatch(typeof(CreateOptionsPicker), nameof(CreateOptionsPicker.SetImpostorButtons))]
     public static class DisableImpostorCountReset
     {
-        private static readonly MethodInfo _refreshMethod = UnityType.Of<CreateOptionsPicker>().GetMethod("Refresh", BindingFlags.Public | BindingFlags.Instance);
+        private static readonly MethodInfo _refreshMethod = typeof(CreateOptionsPicker).GetMethod("Refresh", BindingFlags.Public | BindingFlags.Instance)!;
 
         public static bool Prefix()
         {
-            foreach (var stackFrame in new UnitySystem.Diagnostics.StackTrace().GetFrames())
+            foreach (var stackFrame in new StackTrace().GetFrames())
             {
                 if (_refreshMethod.Equals(stackFrame.GetMethod()))
                 {

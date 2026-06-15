@@ -84,13 +84,13 @@ internal sealed class GameTab : BaseTab
 
         var color = (byte) (playerId % Palette.PlayerColors.Length);
         playerControl.SetColor(color);
-        playerControl.SetHat(HatManager.Instance.allHats[playerId % HatManager.Instance.allHats.Count].ProdId, playerControl.Data.DefaultOutfit.ColorId);
-        playerControl.SetPet(HatManager.Instance.allPets[playerId % HatManager.Instance.allPets.Count].ProdId);
-        playerControl.SetSkin(HatManager.Instance.allSkins[playerId % HatManager.Instance.allSkins.Count].ProdId, color);
-        playerControl.SetVisor(HatManager.Instance.allVisors[playerId % HatManager.Instance.allVisors.Count].ProdId, color);
-        playerControl.SetNamePlate(HatManager.Instance.allNamePlates[playerId % HatManager.Instance.allNamePlates.Count].ProdId);
+        playerControl.SetHat(HatManager.Instance.allHats[playerId % HatManager.Instance.allHats.Length].ProdId, playerControl.Data.DefaultOutfit.ColorId);
+        playerControl.SetPet(HatManager.Instance.allPets[playerId % HatManager.Instance.allPets.Length].ProdId);
+        playerControl.SetSkin(HatManager.Instance.allSkins[playerId % HatManager.Instance.allSkins.Length].ProdId, color);
+        playerControl.SetVisor(HatManager.Instance.allVisors[playerId % HatManager.Instance.allVisors.Length].ProdId, color);
+        playerControl.SetNamePlate(HatManager.Instance.allNamePlates[playerId % HatManager.Instance.allNamePlates.Length].ProdId);
         data.PlayerLevel = playerId;
 
-        data.RpcSetTasks(new UnityStructArray<byte>(0));
+        data.RpcSetTasks(System.Array.Empty<byte>());
     }
 }

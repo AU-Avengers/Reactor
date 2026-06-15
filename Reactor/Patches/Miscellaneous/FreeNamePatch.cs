@@ -22,7 +22,7 @@ internal static class FreeNamePatch
 
     public static void Initialize()
     {
-        SceneManager.add_sceneLoaded((Action<Scene, LoadSceneMode>) ((scene, _) =>
+        SceneManager.sceneLoaded += (scene, _) =>
         {
             if (!scene.name.Equals("MMOnline", StringComparison.Ordinal)) return;
             if (!TryMoveObjects()) return;
@@ -36,12 +36,12 @@ internal static class FreeNamePatch
             textBox.outputText.alignment = TextAlignmentOptions.CenterGeoAligned;
             textBox.outputText.transform.position = nameText.transform.position;
 
-            textBox.OnChange.AddListener((Action) (() =>
+            textBox.OnChange.AddListener(() =>
             {
                 DataManager.Player.Customization.Name = textBox.text;
-            }));
+            });
             textBox.OnEnter = textBox.OnFocusLost = textBox.OnChange;
-        }));
+        };
     }
 
     private static bool TryMoveObjects()
