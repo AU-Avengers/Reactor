@@ -1,5 +1,5 @@
 using System;
-using BepInEx.Unity.Mono;
+using BepInEx;
 
 namespace Reactor.Networking.Rpc;
 

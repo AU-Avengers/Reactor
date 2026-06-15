@@ -36,7 +36,6 @@ public sealed class Dispatcher : MonoBehaviour
     /// Enqueues an <paramref name="action"/>.
     /// </summary>
     /// <param name="action">The action to enqueue.</param>
-    
     public void Enqueue(Action action)
     {
         lock (_queue)

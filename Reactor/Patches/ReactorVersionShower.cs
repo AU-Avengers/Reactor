@@ -1,13 +1,12 @@
 using System;
 using BepInEx;
-using BepInEx.Unity.Mono;
-using BepInEx.Unity.Mono.Bootstrap;
+using BepInEx.Bootstrap;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Version = SemanticVersioning.Version;
+using Version = System.Version;
 
 namespace Reactor.Patches;
 
@@ -96,9 +95,9 @@ public static class ReactorVersionShower
     public static void UpdateText()
     {
         if (Text == null) return;
-        Text.text = "Reactor " + Version.Parse(ReactorPlugin.Version).WithoutBuild();
-        Text.text += "\nBepInEx " + Paths.BepInExVersion.WithoutBuild();
-        Text.text += "\nMods: " + UnityChainloader.Instance.Plugins.Count;
+        Text.text = "Reactor " + Version.Parse(ReactorPlugin.Version);
+        // Text.text += "\nBepInEx " + ReactorPlugin.BepInExVersion.WithoutBuild();
+        Text.text += "\nMods: " + Chainloader.PluginInfos.Count;
 
         var creditsText = ReactorCredits.GetText(ReactorCredits.Location.MainMenu);
         if (creditsText != null)

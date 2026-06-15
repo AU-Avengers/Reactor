@@ -1,9 +1,9 @@
 global using static Reactor.Utilities.Logger<Reactor.ReactorPlugin>;
 using System;
+using System.Reflection;
 using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Logging;
-using BepInEx.Unity.Mono;
-using BepInEx.Unity.Mono.Bootstrap;
 using HarmonyLib;
 using Reactor.Localization;
 using Reactor.Localization.Providers;
@@ -60,9 +60,9 @@ public partial class ReactorPlugin : BaseUnityPlugin
 
     internal void Awake()
     {
-        ReactorConfig.Bind(Config);
-
         Harmony.PatchAll();
+
+        ReactorConfig.Bind(Config);
 
         this.gameObject.AddComponent<ReactorComponent>().Plugin = this;
         this.gameObject.AddComponent<Coroutines.Component>();
@@ -97,9 +97,9 @@ public partial class ReactorPlugin : BaseUnityPlugin
             {
                 Plugin!.Logger.LogInfo("Reloading all configs");
 
-                foreach (var pluginInfo in UnityChainloader.Instance.Plugins.Values)
+                foreach (var pluginInfo in Chainloader.PluginInfos.Values)
                 {
-                    var config = ((BaseUnityPlugin) pluginInfo.Instance).Config;
+                    var config = pluginInfo.Instance.Config;
                     if (config.Count == 0)
                     {
                         continue;

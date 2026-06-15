@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Unity.Mono;
-using BepInEx.Unity.Mono.Bootstrap;
+using BepInEx;
+using BepInEx.Bootstrap;
 using Reactor.Patches;
 using Reactor.Utilities.Extensions;
 
@@ -101,12 +101,12 @@ public static class ReactorCredits
     /// <param name="shouldShow"><inheritdoc cref="Register(string,string,bool,System.Func{Location,bool})" path="/param[@name='shouldShow']"/></param>
     public static void Register<T>(Func<Location, bool>? shouldShow) where T : BaseUnityPlugin
     {
-        var pluginInfo = UnityChainloader.Instance.Plugins.Values.SingleOrDefault(p => p.TypeName == typeof(T).FullName)
+        var pluginInfo = Chainloader.PluginInfos.Values.SingleOrDefault(p => p.Metadata.Name == typeof(T).FullName)
                          ?? throw new ArgumentException("Couldn't find the metadata for the provided plugin type", nameof(T));
 
         var metadata = pluginInfo.Metadata;
 
-        Register(metadata.Name, metadata.Version.WithoutBuild().Clean(), metadata.Version.IsPreRelease, shouldShow);
+        Register(metadata.Name, metadata.Version.ToString(), false, shouldShow);
     }
 
     internal static string? GetText(Location location)

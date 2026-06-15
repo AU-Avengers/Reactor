@@ -1,8 +1,7 @@
 using System;
 using System.Reflection;
 using BepInEx;
-using BepInEx.Unity.Mono;
-using BepInEx.Unity.Mono.Bootstrap;
+using BepInEx.Bootstrap;
 using HarmonyLib;
 
 namespace Reactor.Utilities;
@@ -22,7 +21,7 @@ internal static class PluginLoadHooks
         private static MethodBase TargetMethod()
         {
             return AccessTools.DeclaredMethod(
-                typeof(UnityChainloader),
+                typeof(Chainloader),
                 "LoadPlugin",
                 new[] { typeof(PluginInfo), typeof(Assembly) });
         }

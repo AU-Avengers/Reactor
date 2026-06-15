@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using BepInEx.Unity.Mono;
-using BepInEx.Unity.Mono.Bootstrap;
 using HarmonyLib;
 using Reactor.Networking.Serialization;
 using Reactor.Utilities;

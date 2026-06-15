@@ -4,8 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using BepInEx;
-using BepInEx.Unity.Mono;
-using BepInEx.Unity.Mono.Bootstrap;
+using BepInEx.Bootstrap;
 using Hazel;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Patches;
@@ -99,7 +98,7 @@ public static class ModList
     {
         if (ReactorConnection.Instance != null) throw new InvalidOperationException("Can't refresh the mod list during a connection");
 
-        Current = UnityChainloader.Instance.Plugins.Values
+        Current = Chainloader.PluginInfos.Values
             .Select(pluginInfo => GetById(pluginInfo.Metadata.GUID))
             .OrderByDescending(x => x.Id == ReactorPlugin.Id)
             .ThenBy(x => x.Id, StringComparer.Ordinal)
@@ -138,7 +137,7 @@ public static class ModList
 
         var mod = new Mod(
             pluginInfo.Metadata.GUID,
-            pluginInfo.Metadata.Version.Clean(),
+            pluginInfo.Metadata.Version.ToString(),
             ReactorModFlagsAttribute.GetModFlags(pluginType),
             pluginInfo.Metadata.Name
         );
@@ -149,7 +148,7 @@ public static class ModList
 
     internal static void Initialize()
     {
-        foreach (var existingPlugin in UnityChainloader.Instance.Plugins.Values)
+        foreach (var existingPlugin in Chainloader.PluginInfos.Values)
         {
             if (existingPlugin.Instance == null) continue;
             OnPluginLoad(existingPlugin, (BaseUnityPlugin) existingPlugin.Instance);

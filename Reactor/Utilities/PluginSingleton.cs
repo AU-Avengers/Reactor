@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using BepInEx.Unity.Mono;
-using BepInEx.Unity.Mono.Bootstrap;
+using BepInEx;
+using BepInEx.Bootstrap;
 
 namespace Reactor.Utilities;
 
@@ -19,7 +19,7 @@ public static class PluginSingleton<T> where T : BaseUnityPlugin
     /// </summary>
     public static T Instance
     {
-        get => _instance ??= UnityChainloader.Instance.Plugins.Values.Select(x => x.Instance).OfType<T>().Single();
+        get => _instance ??= Chainloader.PluginInfos.Values.Select(x => x.Instance).OfType<T>().Single();
         set
         {
             if (_instance == value) return;

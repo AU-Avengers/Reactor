@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using BepInEx.Unity.Mono;
+using BepInEx;
 using HarmonyLib;
 using Hazel;
 using Hazel.Udp;
