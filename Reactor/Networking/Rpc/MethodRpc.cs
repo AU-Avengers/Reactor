@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.Mono;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
@@ -32,7 +32,7 @@ public class MethodRpc : UnsafeCustomRpc
     /// <param name="id">The id of the rpc.</param>
     /// <param name="option">The send option of the rpc.</param>
     /// <param name="localHandling">The local handling method of the rpc.</param>
-    public MethodRpc(BasePlugin plugin, MethodInfo method, uint id, SendOption option, RpcLocalHandling localHandling) : base(plugin, id)
+    public MethodRpc(BaseUnityPlugin plugin, MethodInfo method, uint id, SendOption option, RpcLocalHandling localHandling) : base(plugin, id)
     {
         Method = method;
         LocalHandling = localHandling;
@@ -79,7 +79,7 @@ public class MethodRpc : UnsafeCustomRpc
     /// <param name="localHandling">The local handling method of the rpc.</param>
     /// <param name="sendImmediately">The value indicating whether the rpc should be sent immediately.</param>
     [Obsolete("Non-immediate RPCs were removed in 2025.5.20. All RPCs are immediate. Remove sendImmediately from the parameter list.")]
-    public MethodRpc(BasePlugin plugin, MethodInfo method, uint id, SendOption option, RpcLocalHandling localHandling, bool sendImmediately)
+    public MethodRpc(BaseUnityPlugin plugin, MethodInfo method, uint id, SendOption option, RpcLocalHandling localHandling, bool sendImmediately)
         : this(plugin, method, id, option, localHandling)
     {
         SendImmediately = sendImmediately;

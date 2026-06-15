@@ -3,12 +3,11 @@ using System.Linq;
 using System.Reflection;
 using AmongUs.Data;
 using AmongUs.InnerNet.GameDataMessages;
-using BepInEx.Unity.IL2CPP.Utils;
+using BepInEx.Unity.Mono.Utils;
 using HarmonyLib;
 using Hazel;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.InteropTypes;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using UnityInterop.Runtime;
+using UnityInterop.Runtime.InteropTypes;
 using InnerNet;
 using Reactor.Networking.Extensions;
 using Reactor.Networking.Messages;
@@ -41,7 +40,7 @@ internal static class ClientPatches
             return Il2CppStateMachineWrapper<InnerNetClient>.GetStateMachineMoveNext(nameof(InnerNetClient.HandleGameDataInner))!;
         }
 
-        public static bool Prefix(Il2CppObjectBase __instance, ref bool __result)
+        public static bool Prefix(UnityObjectBase __instance, ref bool __result)
         {
             var wrapper = new Il2CppStateMachineWrapper<InnerNetClient>(__instance);
 
@@ -180,7 +179,7 @@ internal static class ClientPatches
             return Il2CppStateMachineWrapper<InnerNetClient>.GetStateMachineMoveNext(nameof(InnerNetClient.CoSendSceneChange))!;
         }
 
-        public static bool Prefix(Il2CppObjectBase __instance, ref bool __result)
+        public static bool Prefix(UnityObjectBase __instance, ref bool __result)
         {
             var wrapper = new Il2CppStateMachineWrapper<InnerNetClient>(__instance);
 
@@ -236,7 +235,7 @@ internal static class ClientPatches
             return Il2CppStateMachineWrapper<InnerNetClient>.GetStateMachineMoveNext(nameof(InnerNetClient.CoHandleSpawn))!;
         }
 
-        public static void Postfix(Il2CppObjectBase __instance, bool __result)
+        public static void Postfix(UnityObjectBase __instance, bool __result)
         {
             if (ReactorConnection.Instance!.Syncer != Syncer.Host) return;
 
@@ -274,7 +273,7 @@ internal static class ClientPatches
             }
 
             // PATCH - Inject ReactorHandshakeS2C
-            if (AmongUsClient.Instance.ClientId != __instance.ownerId && __instance.NetObjectType == Il2CppType.Of<PlayerControl>())
+            if (AmongUsClient.Instance.ClientId != __instance.ownerId && __instance.NetObjectType == UnityType.Of<PlayerControl>())
             {
                 Debug("Injecting ReactorHandshakeS2C to WriteSpawnMessage");
                 ReactorHeader.Write(msg);
@@ -356,7 +355,7 @@ internal static class ClientPatches
             useDtlsLayout = AmongUsClient.Instance.useDtls;
         }
 
-        public static void Postfix(ref Il2CppStructArray<byte> __result)
+        public static void Postfix(ref UnityStructArray<byte> __result)
         {
             var handshake = new MessageWriter(1000);
 

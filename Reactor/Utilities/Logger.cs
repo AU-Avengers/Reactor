@@ -1,7 +1,8 @@
+/*
 using System.Runtime.CompilerServices;
 using BepInEx.Core.Logging.Interpolation;
 using BepInEx.Logging;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.Mono;
 
 namespace Reactor.Utilities;
 
@@ -9,12 +10,12 @@ namespace Reactor.Utilities;
 /// Provides singleton access to plugins logger.
 /// </summary>
 /// <typeparam name="T">The type of the plugin.</typeparam>
-public static class Logger<T> where T : BasePlugin
+public static class Logger<T> where T : BaseUnityPlugin
 {
     /// <summary>
     /// Gets the instance.
     /// </summary>
-    public static ManualLogSource Instance => PluginSingleton<T>.Instance.Log;
+    public static ManualLogSource Instance => new(PluginSingleton<T>.Instance.name);
 
     /// <inheritdoc cref="ManualLogSource.Log(BepInEx.Logging.LogLevel,object)"/>
     public static void Log(LogLevel level, object data) => Instance.Log(level, data);
@@ -58,3 +59,4 @@ public static class Logger<T> where T : BasePlugin
     /// <inheritdoc cref="ManualLogSource.LogDebug(BepInExDebugLogInterpolatedStringHandler)"/>
     public static void Debug(BepInExDebugLogInterpolatedStringHandler logHandler) => Instance.LogDebug(logHandler);
 }
+*/

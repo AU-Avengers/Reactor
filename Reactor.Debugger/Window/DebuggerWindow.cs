@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Linq;
 using AmongUs.Data;
-using BepInEx.Unity.IL2CPP.Utils;
-using Il2CppInterop.Runtime.Attributes;
-using Il2CppInterop.Runtime.InteropTypes;
+using BepInEx.Unity.Mono.Utils;
+using UnityInterop.Runtime.Attributes;
+using UnityInterop.Runtime.InteropTypes;
 using Reactor.Debugger.Utilities;
 using Reactor.Debugger.Window.Tabs;
 using Reactor.Utilities.Attributes;
@@ -13,12 +13,12 @@ using UnityEngine;
 
 namespace Reactor.Debugger.Window;
 
-[RegisterInIl2Cpp]
+[RegisterInUnity]
 internal sealed class DebuggerWindow : MonoBehaviour
 {
     private readonly DragWindow _window;
 
-    [HideFromIl2Cpp]
+    
     public BaseTab[] Tabs { get; } =
     {
         new ConfigTab(),
@@ -26,7 +26,7 @@ internal sealed class DebuggerWindow : MonoBehaviour
         new AutoJoinTab(),
     };
 
-    [HideFromIl2Cpp]
+    
     public BaseTab SelectedTab { get; private set; }
 
     public DebuggerWindow(IntPtr ptr) : base(ptr)
@@ -41,7 +41,7 @@ internal sealed class DebuggerWindow : MonoBehaviour
 
             if (GUILayout.Button("Hard crash"))
             {
-                static unsafe void Corrupt(Il2CppObjectBase o)
+                static unsafe void Corrupt(UnityObjectBase o)
                 {
                     var x = (IntPtr*) o.Pointer;
                     x[0] = (IntPtr) 0xF00;

@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Concurrent;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.Mono;
 using HarmonyLib;
 using Hazel;
 using Hazel.Udp;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using Reactor.Utilities;
-using Buffer = Il2CppSystem.Buffer;
+using Buffer = UnitySystem.Buffer;
 
 namespace Reactor.Networking.Rpc;
 
@@ -31,7 +30,7 @@ public abstract class UnsafeCustomRpc
     /// <summary>
     /// Gets the plugin of the rpc.
     /// </summary>
-    public BasePlugin UnsafePlugin { get; }
+    public BaseUnityPlugin UnsafePlugin { get; }
 
     /// <summary>
     /// Gets the mod of the rpc.
@@ -58,7 +57,7 @@ public abstract class UnsafeCustomRpc
     /// </summary>
     /// <param name="plugin">The plugin that the rpc is attached to.</param>
     /// <param name="id">The id of the rpc.</param>
-    protected UnsafeCustomRpc(BasePlugin plugin, uint id)
+    protected UnsafeCustomRpc(BaseUnityPlugin plugin, uint id)
     {
         UnsafePlugin = plugin;
         Mod = ModList.GetByPluginType(plugin.GetType());
@@ -140,7 +139,7 @@ public abstract class UnsafeCustomRpc
         }
     }
 
-    private static ConcurrentDictionary<MessageWriter, Action> AckCallbacks { get; } = new(Il2CppEqualityComparer<MessageWriter>.Instance);
+    private static ConcurrentDictionary<MessageWriter, Action> AckCallbacks { get; } = new(UnityEqualityComparer<MessageWriter>.Instance);
 
     [HarmonyPatch(typeof(UdpConnection), nameof(UdpConnection.Send))]
     private static class MessageAckPatch
@@ -151,8 +150,8 @@ public abstract class UnsafeCustomRpc
 
             if (msg.SendOption == SendOption.Reliable && AckCallbacks.TryRemove(msg, out var ackCallback))
             {
-                var buffer = new Il2CppStructArray<byte>(msg.Length);
-                Buffer.BlockCopy(new Il2CppSystem.Array(msg.Buffer.Pointer), 0, new Il2CppSystem.Array(buffer.Pointer), 0, msg.Length);
+                var buffer = new UnityStructArray<byte>(msg.Length);
+                Buffer.BlockCopy(new UnitySystem.Array(msg.Buffer.Pointer), 0, new UnitySystem.Array(buffer.Pointer), 0, msg.Length);
 
                 __instance.ResetKeepAliveTimer();
 

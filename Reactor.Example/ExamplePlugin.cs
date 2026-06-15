@@ -1,7 +1,7 @@
 using System;
 using BepInEx;
-using BepInEx.Unity.IL2CPP;
-using Il2CppInterop.Runtime.Attributes;
+using BepInEx.Unity.Mono;
+using UnityInterop.Runtime.Attributes;
 using Reactor.Localization;
 using Reactor.Localization.Utilities;
 using Reactor.Networking;
@@ -19,7 +19,7 @@ namespace Reactor.Example;
 [BepInProcess("Among Us.exe")]
 [BepInDependency(ReactorPlugin.Id)]
 [ReactorModFlags(ModFlags.RequireOnAllClients)]
-public partial class ExamplePlugin : BasePlugin
+public partial class ExamplePlugin : BaseUnityPlugin
 {
     private static StringNames _helloStringName;
 
@@ -33,10 +33,10 @@ public partial class ExamplePlugin : BasePlugin
         LocalizationManager.Register(new ExampleLocalizationProvider());
     }
 
-    [RegisterInIl2Cpp]
+    [RegisterInUnity]
     public class ExampleComponent : MonoBehaviour
     {
-        [HideFromIl2Cpp]
+        
         public DragWindow TestWindow { get; }
 
         public ExampleComponent(IntPtr ptr) : base(ptr)

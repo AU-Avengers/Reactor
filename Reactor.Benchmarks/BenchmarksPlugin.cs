@@ -1,14 +1,14 @@
 using System.Diagnostics;
 using BenchmarkDotNet.Running;
 using BepInEx;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.Mono;
 
 namespace Reactor.Benchmarks;
 
 [BepInAutoPlugin("gg.reactor.benchmarks")]
 [BepInProcess("Among Us.exe")]
 [BepInDependency(ReactorPlugin.Id)]
-public partial class BenchmarksPlugin : BasePlugin
+public partial class BenchmarksPlugin : BaseUnityPlugin
 {
     public override void Load()
     {

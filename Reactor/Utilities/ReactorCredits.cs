@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.Mono;
 using Reactor.Patches;
 using Reactor.Utilities.Extensions;
 
@@ -98,9 +98,9 @@ public static class ReactorCredits
     /// </summary>
     /// <typeparam name="T">The BepInEx plugin type to get the name and version from.</typeparam>
     /// <param name="shouldShow"><inheritdoc cref="Register(string,string,bool,System.Func{Location,bool})" path="/param[@name='shouldShow']"/></param>
-    public static void Register<T>(Func<Location, bool>? shouldShow) where T : BasePlugin
+    public static void Register<T>(Func<Location, bool>? shouldShow) where T : BaseUnityPlugin
     {
-        var pluginInfo = IL2CPPChainloader.Instance.Plugins.Values.SingleOrDefault(p => p.TypeName == typeof(T).FullName)
+        var pluginInfo = UnityChainloader.Instance.Plugins.Values.SingleOrDefault(p => p.TypeName == typeof(T).FullName)
                          ?? throw new ArgumentException("Couldn't find the metadata for the provided plugin type", nameof(T));
 
         var metadata = pluginInfo.Metadata;

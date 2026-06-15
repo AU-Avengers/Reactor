@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.Mono;
 using HarmonyLib;
 using Reactor.Networking.Serialization;
 
@@ -50,7 +50,7 @@ public sealed class MessageConverterAttribute : Attribute
 
     internal static void Initialize()
     {
-        IL2CPPChainloader.Instance.PluginLoad += (_, assembly, _) => Register(assembly);
-        IL2CPPChainloader.Instance.Finished += MessageSerializer.ClearMaps;
+        UnityChainloader.Instance.PluginLoad += (_, assembly, _) => Register(assembly);
+        UnityChainloader.Instance.Finished += MessageSerializer.ClearMaps;
     }
 }

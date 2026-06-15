@@ -1,58 +1,58 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.Mono;
 using HarmonyLib;
-using Il2CppInterop.Runtime.Injection;
+using UnityInterop.Runtime.Injection;
 
 namespace Reactor.Utilities.Attributes;
 
 /// <summary>
-/// Automatically registers an il2cpp type using <see cref="ClassInjector.RegisterTypeInIl2Cpp{T}()"/>.
+/// Automatically registers an Unity type using <see cref="ClassInjector.RegisterTypeInUnity{T}()"/>.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class)]
-public sealed class RegisterInIl2CppAttribute : Attribute
+public sealed class RegisterInUnityAttribute : Attribute
 {
     private static readonly HashSet<Assembly> _registeredAssemblies = new();
 
     /// <summary>
-    /// Gets il2cpp interfaces to be injected with this type.
+    /// Gets Unity interfaces to be injected with this type.
     /// </summary>
     public Type[] Interfaces { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RegisterInIl2CppAttribute"/> class without any interfaces.
+    /// Initializes a new instance of the <see cref="RegisterInUnityAttribute"/> class without any interfaces.
     /// </summary>
-    public RegisterInIl2CppAttribute()
+    public RegisterInUnityAttribute()
     {
         Interfaces = Type.EmptyTypes;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RegisterInIl2CppAttribute"/> class with interfaces.
+    /// Initializes a new instance of the <see cref="RegisterInUnityAttribute"/> class with interfaces.
     /// </summary>
-    /// <param name="interfaces">Il2Cpp interfaces to be injected with this type.</param>
-    public RegisterInIl2CppAttribute(params Type[] interfaces)
+    /// <param name="interfaces">Unity interfaces to be injected with this type.</param>
+    public RegisterInUnityAttribute(params Type[] interfaces)
     {
         Interfaces = interfaces;
     }
 
     private static void RegisterType(Type type, Type[] interfaces)
     {
-        var baseTypeAttribute = type.BaseType?.GetCustomAttribute<RegisterInIl2CppAttribute>();
+        var baseTypeAttribute = type.BaseType?.GetCustomAttribute<RegisterInUnityAttribute>();
         if (baseTypeAttribute != null)
         {
             RegisterType(type.BaseType!, baseTypeAttribute.Interfaces);
         }
 
-        if (ClassInjector.IsTypeRegisteredInIl2Cpp(type))
+        if (ClassInjector.IsTypeRegisteredInUnity(type))
         {
             return;
         }
 
         try
         {
-            ClassInjector.RegisterTypeInIl2Cpp(type, new RegisterTypeOptions { Interfaces = interfaces });
+            ClassInjector.RegisterTypeInUnity(type, new RegisterTypeOptions { Interfaces = interfaces });
         }
         catch (Exception e)
         {
@@ -61,7 +61,7 @@ public sealed class RegisterInIl2CppAttribute : Attribute
     }
 
     /// <summary>
-    /// Registers all Il2Cpp types annotated with <see cref="RegisterInIl2CppAttribute"/> in the specified <paramref name="assembly"/>.
+    /// Registers all Unity types annotated with <see cref="RegisterInUnityAttribute"/> in the specified <paramref name="assembly"/>.
     /// </summary>
     /// <remarks>This is called automatically on plugin assemblies so you probably don't need to call this.</remarks>
     /// <param name="assembly">The assembly to search.</param>
@@ -72,7 +72,7 @@ public sealed class RegisterInIl2CppAttribute : Attribute
 
         foreach (var type in assembly.GetTypes())
         {
-            var attribute = type.GetCustomAttribute<RegisterInIl2CppAttribute>();
+            var attribute = type.GetCustomAttribute<RegisterInUnityAttribute>();
             if (attribute != null)
             {
                 RegisterType(type, attribute.Interfaces);
@@ -82,6 +82,6 @@ public sealed class RegisterInIl2CppAttribute : Attribute
 
     internal static void Initialize()
     {
-        IL2CPPChainloader.Instance.PluginLoad += (_, assembly, _) => Register(assembly);
+        UnityChainloader.Instance.PluginLoad += (_, assembly, _) => Register(assembly);
     }
 }

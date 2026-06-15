@@ -1,5 +1,4 @@
-﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Reactor.Utilities;
+﻿using Reactor.Utilities;
 
 namespace Reactor.Localization;
 
@@ -42,11 +41,11 @@ public abstract class LocalizationProvider
     /// <param name="parts">The arguments used for formatting.</param>
     /// <param name="result">The <see cref="string"/> representation of the given <see cref="StringNames"/>.</param>
     /// <returns>Whether or not this <see cref="LocalizationProvider"/> can handle this <see cref="StringNames"/>.</returns>
-    public virtual bool TryGetTextFormatted(StringNames stringName, Il2CppReferenceArray<Il2CppSystem.Object> parts, out string? result)
+    public virtual bool TryGetTextFormatted(StringNames stringName, UnityReferenceArray<UnitySystem.Object> parts, out string? result)
     {
         if (!TryGetText(stringName, out result)) return false;
 
-        result = Il2CppSystem.String.Format(result, parts);
+        result = UnitySystem.String.Format(result, parts);
         return true;
     }
 

@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using Il2CppInterop.Runtime;
+using UnityInterop.Runtime;
 using InnerNet;
 
 namespace Reactor.Debugger.Utilities;
@@ -32,10 +32,10 @@ internal static class Extensions
 
             client.SetEndpoint(Constants.LocalNetAddress, Constants.GamePlayPort, false);
         }
-        catch (Il2CppException e)
+        catch (UnityException e)
         {
             Error(e);
-            DisconnectPopup.Instance.ShowCustom(e.Message[..e.Message.IndexOf("\n--- BEGIN IL2CPP STACK TRACE ---\n", StringComparison.Ordinal)]);
+            DisconnectPopup.Instance.ShowCustom(e.Message[..e.Message.IndexOf("\n--- BEGIN Unity STACK TRACE ---\n", StringComparison.Ordinal)]);
             MatchMaker.Instance.NotConnecting();
             yield break;
         }

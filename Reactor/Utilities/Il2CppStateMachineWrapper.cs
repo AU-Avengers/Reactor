@@ -14,7 +14,7 @@ namespace Reactor.Utilities;
 /// <typeparam name="T">The type of the parent class that owns the state machine.</typeparam>
 public class Il2CppStateMachineWrapper<T> : Il2CppCompilerGeneratedObjectWrapper
 {
-    // normally it is fields, but IL2CPP turns them into properties
+    // normally it is fields, but Unity turns them into properties
     private readonly PropertyInfo _thisProperty;
     private readonly PropertyInfo _stateProperty;
 

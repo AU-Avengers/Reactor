@@ -5,7 +5,6 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BepInEx;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
 using UnityEngine;
@@ -56,7 +55,7 @@ public class AssetBundleBenchmarks
     public AssetBundle LoadFromStream()
     {
         using var stream = GetResourceStream();
-        return LoadAll(AssetBundle.LoadFromStream(stream.AsIl2Cpp()));
+        return LoadAll(AssetBundle.LoadFromStream(stream.AsUnity()));
     }
 
     [Benchmark]
@@ -71,10 +70,10 @@ public class AssetBundleBenchmarks
     {
         using var stream = GetResourceStream();
         var array = stream.ReadFully();
-        var il2CppArray = new Il2CppStructArray<byte>(array.Length);
-        fixed (byte* arrayPtr = array) { Buffer.MemoryCopy(arrayPtr, IntPtr.Add(il2CppArray.Pointer, 4 * IntPtr.Size).ToPointer(), il2CppArray.Length, array.Length); }
+        var UnityArray = new UnityStructArray<byte>(array.Length);
+        fixed (byte* arrayPtr = array) { Buffer.MemoryCopy(arrayPtr, IntPtr.Add(UnityArray.Pointer, 4 * IntPtr.Size).ToPointer(), UnityArray.Length, array.Length); }
 
-        return LoadAll(AssetBundle.LoadFromMemory(il2CppArray));
+        return LoadAll(AssetBundle.LoadFromMemory(UnityArray));
     }
 
     [Benchmark]
@@ -83,7 +82,7 @@ public class AssetBundleBenchmarks
         using var stream = GetResourceStream();
         var length = (int) stream.Length;
 
-        var array = new Il2CppStructArray<byte>(length);
+        var array = new UnityStructArray<byte>(length);
         if (stream.Read(array.ToSpan()) < length) throw new IOException("Failed to read in full");
 
         return LoadAll(AssetBundle.LoadFromMemory(array));

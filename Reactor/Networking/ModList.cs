@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using BepInEx;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.Mono;
 using Hazel;
 using Reactor.Networking.Attributes;
 using Reactor.Networking.Patches;
@@ -97,7 +97,7 @@ public static class ModList
     {
         if (ReactorConnection.Instance != null) throw new InvalidOperationException("Can't refresh the mod list during a connection");
 
-        Current = IL2CPPChainloader.Instance.Plugins.Values
+        Current = UnityChainloader.Instance.Plugins.Values
             .Select(pluginInfo => GetById(pluginInfo.Metadata.GUID))
             .OrderByDescending(x => x.Id == ReactorPlugin.Id)
             .ThenBy(x => x.Id, StringComparer.Ordinal)
@@ -130,7 +130,7 @@ public static class ModList
         Debug(debug.ToString());
     }
 
-    private static void OnPluginLoad(PluginInfo pluginInfo, BasePlugin plugin)
+    private static void OnPluginLoad(PluginInfo pluginInfo, BaseUnityPlugin plugin)
     {
         var pluginType = plugin.GetType();
 
@@ -147,14 +147,14 @@ public static class ModList
 
     internal static void Initialize()
     {
-        foreach (var existingPlugin in IL2CPPChainloader.Instance.Plugins.Values)
+        foreach (var existingPlugin in UnityChainloader.Instance.Plugins.Values)
         {
             if (existingPlugin.Instance == null) continue;
-            OnPluginLoad(existingPlugin, (BasePlugin) existingPlugin.Instance);
+            OnPluginLoad(existingPlugin, (BaseUnityPlugin) existingPlugin.Instance);
         }
 
-        IL2CPPChainloader.Instance.PluginLoad += (pluginInfo, _, plugin) => OnPluginLoad(pluginInfo, plugin);
+        UnityChainloader.Instance.PluginLoad += (pluginInfo, _, plugin) => OnPluginLoad(pluginInfo, plugin);
 
-        IL2CPPChainloader.Instance.Finished += Refresh;
+        UnityChainloader.Instance.Finished += Refresh;
     }
 }

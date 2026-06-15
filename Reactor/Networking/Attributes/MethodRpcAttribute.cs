@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.Mono;
 using HarmonyLib;
 using Hazel;
 using Reactor.Networking.Rpc;
@@ -54,7 +54,7 @@ public sealed class MethodRpcAttribute : Attribute
     /// <remarks>This is called automatically on plugin assemblies so you probably don't need to call this.</remarks>
     /// <param name="assembly">The assembly to search.</param>
     /// <param name="plugin">The plugin to register the rpc to.</param>
-    public static void Register(Assembly assembly, BasePlugin plugin)
+    public static void Register(Assembly assembly, BaseUnityPlugin plugin)
     {
         if (_registeredAssemblies.Contains(assembly)) return;
         _registeredAssemblies.Add(assembly);
@@ -84,6 +84,6 @@ public sealed class MethodRpcAttribute : Attribute
 
     internal static void Initialize()
     {
-        IL2CPPChainloader.Instance.PluginLoad += (_, assembly, plugin) => Register(assembly, plugin);
+        UnityChainloader.Instance.PluginLoad += (_, assembly, plugin) => Register(assembly, plugin);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 namespace Reactor.Localization;
 
@@ -43,7 +42,7 @@ public static class LocalizationManager
         _providers.Remove(provider);
     }
 
-    internal static bool TryGetTextFormatted(StringNames stringName, Il2CppReferenceArray<Il2CppSystem.Object> parts, out string text)
+    internal static bool TryGetTextFormatted(StringNames stringName, UnityReferenceArray<UnitySystem.Object> parts, out string text)
     {
         foreach (var provider in _providers)
         {

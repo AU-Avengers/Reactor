@@ -1,8 +1,8 @@
+/*
 using System.Globalization;
 using System.Text;
 using BepInEx.Logging;
 using HarmonyLib;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 namespace Reactor.Debugger.Patches;
 
@@ -13,7 +13,7 @@ internal static class RedirectLoggerPatch
 
     private static bool Enabled => DebuggerConfig.RedirectLogger.Value;
 
-    private static void Log(Logger logger, LogLevel level, Il2CppStringArray? path, Il2CppSystem.Object message, UnityEngine.Object? context = null)
+    private static void Log(Logger logger, LogLevel level, UnityStringArray? path, UnitySystem.Object message, UnityEngine.Object? context = null)
     {
         var finalMessage = new StringBuilder();
 
@@ -34,81 +34,82 @@ internal static class RedirectLoggerPatch
             }
         }
 
-        if (context != null) finalMessage.Append(CultureInfo.InvariantCulture, $"[{context.name} ({context.GetIl2CppType().FullName})] ");
+        if (context != null) finalMessage.Append(CultureInfo.InvariantCulture, $"[{context.name} ({context.GetUnityType().FullName})] ");
         finalMessage.Append(message.ToString());
 
         _log.Log(level, finalMessage);
     }
 
-    [HarmonyPatch(nameof(Logger.Debug), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
+    [HarmonyPatch(nameof(Logger.Debug), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
     [HarmonyPrefix]
-    public static bool DebugPatch(Logger __instance, Il2CppSystem.Object message, UnityEngine.Object? context)
+    public static bool DebugPatch(Logger __instance, UnitySystem.Object message, UnityEngine.Object? context)
     {
         if (!Enabled) return true;
         Log(__instance, LogLevel.Debug, null, message, context);
         return false;
     }
 
-    [HarmonyPatch(nameof(Logger.Info), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
+    [HarmonyPatch(nameof(Logger.Info), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
     [HarmonyPrefix]
-    public static bool InfoPatch(Logger __instance, Il2CppSystem.Object message, UnityEngine.Object? context)
+    public static bool InfoPatch(Logger __instance, UnitySystem.Object message, UnityEngine.Object? context)
     {
         if (!Enabled) return true;
         Log(__instance, LogLevel.Info, null, message, context);
         return false;
     }
 
-    [HarmonyPatch(nameof(Logger.Warning), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
+    [HarmonyPatch(nameof(Logger.Warning), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
     [HarmonyPrefix]
-    public static bool WarningPatch(Logger __instance, Il2CppSystem.Object message, UnityEngine.Object? context)
+    public static bool WarningPatch(Logger __instance, UnitySystem.Object message, UnityEngine.Object? context)
     {
         if (!Enabled) return true;
         Log(__instance, LogLevel.Warning, null, message, context);
         return false;
     }
 
-    [HarmonyPatch(nameof(Logger.Error), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
+    [HarmonyPatch(nameof(Logger.Error), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
     [HarmonyPrefix]
-    public static bool ErrorPatch(Logger __instance, Il2CppSystem.Object message, UnityEngine.Object? context)
+    public static bool ErrorPatch(Logger __instance, UnitySystem.Object message, UnityEngine.Object? context)
     {
         if (!Enabled) return true;
         Log(__instance, LogLevel.Error, null, message, context);
         return false;
     }
 
-    [HarmonyPatch(nameof(Logger.Debug), typeof(Il2CppStringArray), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
+    [HarmonyPatch(nameof(Logger.Debug), typeof(UnityStringArray), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
     [HarmonyPrefix]
-    public static bool DebugPatch(Logger __instance, Il2CppStringArray? path, Il2CppSystem.Object message, UnityEngine.Object? context)
+    public static bool DebugPatch(Logger __instance, UnityStringArray? path, UnitySystem.Object message, UnityEngine.Object? context)
     {
         if (!Enabled) return true;
         Log(__instance, LogLevel.Debug, path, message, context);
         return false;
     }
 
-    [HarmonyPatch(nameof(Logger.Info), typeof(Il2CppStringArray), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
+    [HarmonyPatch(nameof(Logger.Info), typeof(UnityStringArray), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
     [HarmonyPrefix]
-    public static bool InfoPatch(Logger __instance, Il2CppStringArray? path, Il2CppSystem.Object message, UnityEngine.Object? context)
+    public static bool InfoPatch(Logger __instance, UnityStringArray? path, UnitySystem.Object message, UnityEngine.Object? context)
     {
         if (!Enabled) return true;
         Log(__instance, LogLevel.Info, path, message, context);
         return false;
     }
 
-    [HarmonyPatch(nameof(Logger.Warning), typeof(Il2CppStringArray), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
+    [HarmonyPatch(nameof(Logger.Warning), typeof(UnityStringArray), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
     [HarmonyPrefix]
-    public static bool WarningPatch(Logger __instance, Il2CppStringArray? path, Il2CppSystem.Object message, UnityEngine.Object? context)
+    public static bool WarningPatch(Logger __instance, UnityStringArray? path, UnitySystem.Object message, UnityEngine.Object? context)
     {
         if (!Enabled) return true;
         Log(__instance, LogLevel.Warning, path, message, context);
         return false;
     }
 
-    [HarmonyPatch(nameof(Logger.Error), typeof(Il2CppStringArray), typeof(Il2CppSystem.Object), typeof(UnityEngine.Object))]
+    [HarmonyPatch(nameof(Logger.Error), typeof(UnityStringArray), typeof(UnitySystem.Object), typeof(UnityEngine.Object))]
     [HarmonyPrefix]
-    public static bool ErrorPatch(Logger __instance, Il2CppStringArray? path, Il2CppSystem.Object message, UnityEngine.Object? context)
+    public static bool ErrorPatch(Logger __instance, UnityStringArray? path, UnitySystem.Object message, UnityEngine.Object? context)
     {
         if (!Enabled) return true;
         Log(__instance, LogLevel.Error, path, message, context);
         return false;
     }
 }
+*/

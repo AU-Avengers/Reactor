@@ -1,5 +1,5 @@
 using System;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.Mono;
 using Hazel;
 using InnerNet;
 
@@ -11,7 +11,7 @@ namespace Reactor.Networking.Rpc;
 /// <typeparam name="TPlugin">The type of the plugin the the rpc is attached to.</typeparam>
 /// <typeparam name="TInnerNetObject">The type of the <see cref="InnerNetObject"/>.</typeparam>
 /// <typeparam name="TData">The type of the rpc data.</typeparam>
-public abstract class CustomRpc<TPlugin, TInnerNetObject, TData> : UnsafeCustomRpc where TPlugin : BasePlugin where TInnerNetObject : InnerNetObject
+public abstract class CustomRpc<TPlugin, TInnerNetObject, TData> : UnsafeCustomRpc where TPlugin : BaseUnityPlugin where TInnerNetObject : InnerNetObject
 {
     /// <inheritdoc />
     protected CustomRpc(TPlugin plugin, uint id) : base(plugin, id)
@@ -81,7 +81,7 @@ public abstract class CustomRpc<TPlugin, TInnerNetObject, TData> : UnsafeCustomR
 /// </summary>
 /// <typeparam name="TPlugin">The type of the plugin the the rpc is attached to.</typeparam>
 /// <typeparam name="TInnerNetObject">The type of the <see cref="InnerNetObject"/>.</typeparam>
-public abstract class CustomRpc<TPlugin, TInnerNetObject> : UnsafeCustomRpc where TPlugin : BasePlugin where TInnerNetObject : InnerNetObject
+public abstract class CustomRpc<TPlugin, TInnerNetObject> : UnsafeCustomRpc where TPlugin : BaseUnityPlugin where TInnerNetObject : InnerNetObject
 {
     /// <inheritdoc />
     protected CustomRpc(TPlugin plugin, uint id) : base(plugin, id)

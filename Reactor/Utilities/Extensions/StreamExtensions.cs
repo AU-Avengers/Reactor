@@ -1,9 +1,8 @@
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
-using Il2CppInterop.Runtime.Attributes;
-using Il2CppInterop.Runtime.Injection;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using UnityInterop.Runtime.Attributes;
+using UnityInterop.Runtime.Injection;
 using Reactor.Utilities.Attributes;
 
 namespace Reactor.Utilities.Extensions;
@@ -14,10 +13,10 @@ namespace Reactor.Utilities.Extensions;
 public static class StreamExtensions
 {
     /// <summary>
-    /// Provides a <see cref="Il2CppSystem.IO.Stream"/> which uses <see cref="System.IO.Stream"/> under the hood.
+    /// Provides a <see cref="UnitySystem.IO.Stream"/> which uses <see cref="System.IO.Stream"/> under the hood.
     /// </summary>
-    [RegisterInIl2Cpp]
-    public class StreamWrapper : Il2CppSystem.IO.Stream
+    [RegisterInUnity]
+    public class StreamWrapper : UnitySystem.IO.Stream
     {
         private readonly Stream _stream;
 
@@ -34,22 +33,22 @@ public static class StreamExtensions
             _stream = stream;
         }
 
-        [HideFromIl2Cpp]
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe Span<byte> GetSpan(Il2CppStructArray<byte> buffer, int offset, int count)
+        private static unsafe Span<byte> GetSpan(UnityStructArray<byte> buffer, int offset, int count)
         {
             var rawBuffer = (byte*) buffer.Pointer + 4 * IntPtr.Size;
             return new Span<byte>(rawBuffer + offset, count);
         }
 
         /// <inheritdoc />
-        public override int Read(Il2CppStructArray<byte> buffer, int offset, int count)
+        public override int Read(UnityStructArray<byte> buffer, int offset, int count)
         {
             return _stream.Read(GetSpan(buffer, offset, count));
         }
 
         /// <inheritdoc />
-        public override void Write(Il2CppStructArray<byte> buffer, int offset, int count)
+        public override void Write(UnityStructArray<byte> buffer, int offset, int count)
         {
             _stream.Write(GetSpan(buffer, offset, count));
         }
@@ -73,13 +72,13 @@ public static class StreamExtensions
         }
 
         /// <inheritdoc />
-        public override long Seek(long offset, Il2CppSystem.IO.SeekOrigin origin)
+        public override long Seek(long offset, UnitySystem.IO.SeekOrigin origin)
         {
             return _stream.Seek(offset, origin switch
             {
-                Il2CppSystem.IO.SeekOrigin.Begin => SeekOrigin.Begin,
-                Il2CppSystem.IO.SeekOrigin.Current => SeekOrigin.Current,
-                Il2CppSystem.IO.SeekOrigin.End => SeekOrigin.End,
+                UnitySystem.IO.SeekOrigin.Begin => SeekOrigin.Begin,
+                UnitySystem.IO.SeekOrigin.Current => SeekOrigin.Current,
+                UnitySystem.IO.SeekOrigin.End => SeekOrigin.End,
                 _ => throw new ArgumentOutOfRangeException(nameof(origin), origin, null),
             });
         }
@@ -111,11 +110,11 @@ public static class StreamExtensions
     }
 
     /// <summary>
-    /// Wraps a <see cref="System.IO.Stream"/> into a <see cref="Il2CppSystem.IO.Stream"/>.
+    /// Wraps a <see cref="System.IO.Stream"/> into a <see cref="UnitySystem.IO.Stream"/>.
     /// </summary>
     /// <param name="stream">The stream to wrap.</param>
     /// <returns>A <see cref="StreamWrapper"/> for the specified <paramref name="stream"/>.</returns>
-    public static StreamWrapper AsIl2Cpp(this Stream stream) => new(stream);
+    public static StreamWrapper AsUnity(this Stream stream) => new(stream);
 
     /// <summary>
     /// Fully reads the <paramref name="input"/> stream.

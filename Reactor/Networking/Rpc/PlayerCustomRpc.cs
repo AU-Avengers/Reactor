@@ -1,5 +1,5 @@
 using System;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.Mono;
 
 namespace Reactor.Networking.Rpc;
 
@@ -8,7 +8,7 @@ namespace Reactor.Networking.Rpc;
 /// </summary>
 /// <typeparam name="TPlugin">The type of the plugin the the rpc is attached to.</typeparam>
 /// <typeparam name="TData">The type of the rpc data.</typeparam>
-public abstract class PlayerCustomRpc<TPlugin, TData> : CustomRpc<TPlugin, PlayerControl, TData> where TPlugin : BasePlugin
+public abstract class PlayerCustomRpc<TPlugin, TData> : CustomRpc<TPlugin, PlayerControl, TData> where TPlugin : BaseUnityPlugin
 {
     /// <inheritdoc />
     protected PlayerCustomRpc(TPlugin plugin, uint id) : base(plugin, id)
@@ -42,7 +42,7 @@ public abstract class PlayerCustomRpc<TPlugin, TData> : CustomRpc<TPlugin, Playe
 /// Shorthand for <see cref="CustomRpc{TPlugin,TInnerNetObject}"/> with <see cref="PlayerControl"/> as the TInnerNetObject.
 /// </summary>
 /// <typeparam name="TPlugin">The type of the plugin the the rpc is attached to.</typeparam>
-public abstract class PlayerCustomRpc<TPlugin> : CustomRpc<TPlugin, PlayerControl> where TPlugin : BasePlugin
+public abstract class PlayerCustomRpc<TPlugin> : CustomRpc<TPlugin, PlayerControl> where TPlugin : BaseUnityPlugin
 {
     /// <inheritdoc />
     protected PlayerCustomRpc(TPlugin plugin, uint id) : base(plugin, id)

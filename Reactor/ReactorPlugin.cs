@@ -1,9 +1,9 @@
-global using static Reactor.Utilities.Logger<Reactor.ReactorPlugin>;
 using System;
 using BepInEx;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Logging;
+using BepInEx.Unity.Mono;
+using BepInEx.Unity.Mono.Bootstrap;
 using HarmonyLib;
-using Il2CppInterop.Runtime.Attributes;
 using Reactor.Localization;
 using Reactor.Localization.Providers;
 using Reactor.Networking;
@@ -23,12 +23,14 @@ namespace Reactor;
 /// </summary>
 [BepInAutoPlugin("gg.reactor.api")]
 [BepInProcess("Among Us.exe")]
-public partial class ReactorPlugin : BasePlugin
+public partial class ReactorPlugin : BaseUnityPlugin
 {
     /// <summary>
     /// Gets harmony instance.
     /// </summary>
     public Harmony Harmony { get; } = new(Id);
+
+    public static ManualLogSource LogSource;
 
     /// <summary>
     /// Gets custom rpc manager.
@@ -40,12 +42,13 @@ public partial class ReactorPlugin : BasePlugin
     /// <inheritdoc />
     public ReactorPlugin()
     {
-        Log.LogMessage($"Among Us {Application.version} {Constants.GetCurrentPlatformName()}");
+        LogSource = Logger;
+        Logger.LogMessage($"Among Us {Application.version} {Application.platform}");
 
         PluginSingleton<ReactorPlugin>.Instance = this;
-        PluginSingleton<BasePlugin>.Initialize();
+        PluginSingleton<BaseUnityPlugin>.Initialize();
 
-        RegisterInIl2CppAttribute.Initialize();
+        RegisterInUnityAttribute.Initialize();
         ModList.Initialize();
 
         RegisterCustomRpcAttribute.Initialize();
@@ -55,58 +58,49 @@ public partial class ReactorPlugin : BasePlugin
         LocalizationManager.Register(new HardCodedLocalizationProvider());
     }
 
-    /// <inheritdoc />
-    public override void Load()
+    internal void Awake()
     {
         ReactorConfig.Bind(Config);
 
         Harmony.PatchAll();
 
-        this.AddComponent<ReactorComponent>().Plugin = this;
-        this.AddComponent<Coroutines.Component>();
-        this.AddComponent<Dispatcher>();
+        this.gameObject.AddComponent<ReactorComponent>().Plugin = this;
+        this.gameObject.AddComponent<Coroutines.Component>();
+        this.gameObject.AddComponent<Dispatcher>();
 
         ReactorVersionShower.Initialize();
         FreeNamePatch.Initialize();
         DefaultBundle.Load();
 
-        SceneManager.add_sceneLoaded((Action<Scene, LoadSceneMode>) ((scene, _) =>
+        SceneManager.sceneLoaded += (Action<Scene, LoadSceneMode>) ((scene, _) =>
         {
             if (scene.name == "MainMenu")
             {
                 ModManager.Instance.ShowModStamp();
             }
-        }));
+        });
     }
 
-    /// <inheritdoc />
-    public override bool Unload()
+    internal void OnDestroy()
     {
         Harmony.UnpatchSelf();
         RegionInfoWatcher.Dispose();
-
-        return base.Unload();
     }
 
-    [RegisterInIl2Cpp]
+    [RegisterInUnity]
     private sealed class ReactorComponent : MonoBehaviour
     {
-        [HideFromIl2Cpp]
         public ReactorPlugin? Plugin { get; internal set; }
-
-        public ReactorComponent(IntPtr ptr) : base(ptr)
-        {
-        }
 
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.F5))
             {
-                Plugin!.Log.LogInfo("Reloading all configs");
+                Plugin!.Logger.LogInfo("Reloading all configs");
 
-                foreach (var pluginInfo in IL2CPPChainloader.Instance.Plugins.Values)
+                foreach (var pluginInfo in UnityChainloader.Instance.Plugins.Values)
                 {
-                    var config = ((BasePlugin) pluginInfo.Instance).Config;
+                    var config = ((BaseUnityPlugin) pluginInfo.Instance).Config;
                     if (config.Count == 0)
                     {
                         continue;
@@ -118,7 +112,7 @@ public partial class ReactorPlugin : BasePlugin
                     }
                     catch (Exception e)
                     {
-                        Plugin.Log.LogWarning($"Exception occured during reload of {pluginInfo.Metadata.Name}: {e}");
+                        Plugin!.Logger.LogWarning($"Exception occured during reload of {pluginInfo.Metadata.Name}: {e}");
                     }
                 }
             }

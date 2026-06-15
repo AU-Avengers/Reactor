@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using Hazel;
-using Il2CppInterop.Generator.Extensions;
+using UnityInterop.Generator.Extensions;
 using InnerNet;
 using Reactor.Utilities;
 

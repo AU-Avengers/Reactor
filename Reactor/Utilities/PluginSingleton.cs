@@ -1,7 +1,8 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using BepInEx.Unity.IL2CPP;
+using BepInEx.Unity.Mono;
+using BepInEx.Unity.Mono.Bootstrap;
 
 namespace Reactor.Utilities;
 
@@ -9,7 +10,7 @@ namespace Reactor.Utilities;
 /// Provides singleton access to plugins instance.
 /// </summary>
 /// <typeparam name="T">The type of the plugin.</typeparam>
-public static class PluginSingleton<T> where T : BasePlugin
+public static class PluginSingleton<T> where T : BaseUnityPlugin
 {
     private static T? _instance;
 
@@ -18,7 +19,7 @@ public static class PluginSingleton<T> where T : BasePlugin
     /// </summary>
     public static T Instance
     {
-        get => _instance ??= IL2CPPChainloader.Instance.Plugins.Values.Select(x => x.Instance).OfType<T>().Single();
+        get => _instance ??= UnityChainloader.Instance.Plugins.Values.Select(x => x.Instance).OfType<T>().Single();
         set
         {
             if (_instance == value) return;
@@ -29,7 +30,7 @@ public static class PluginSingleton<T> where T : BasePlugin
 
     internal static void Initialize()
     {
-        IL2CPPChainloader.Instance.PluginLoad += (_, _, plugin) =>
+        UnityChainloader.Instance.PluginLoaded += plugin =>
         {
             typeof(PluginSingleton<>).MakeGenericType(plugin.GetType())
                 .GetField(nameof(_instance), BindingFlags.Static | BindingFlags.NonPublic)!

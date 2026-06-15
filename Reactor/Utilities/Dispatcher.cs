@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Il2CppInterop.Runtime.Attributes;
+using UnityInterop.Runtime.Attributes;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -9,7 +9,7 @@ namespace Reactor.Utilities;
 /// <summary>
 /// Dispatches actions on Unity main thread.
 /// </summary>
-[RegisterInIl2Cpp]
+[RegisterInUnity]
 public sealed class Dispatcher : MonoBehaviour
 {
     /// <summary>
@@ -39,7 +39,7 @@ public sealed class Dispatcher : MonoBehaviour
     /// Enqueues an <paramref name="action"/>.
     /// </summary>
     /// <param name="action">The action to enqueue.</param>
-    [HideFromIl2Cpp]
+    
     public void Enqueue(Action action)
     {
         lock (_queue)

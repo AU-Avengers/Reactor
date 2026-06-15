@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -92,6 +91,6 @@ internal sealed class GameTab : BaseTab
         playerControl.SetNamePlate(HatManager.Instance.allNamePlates[playerId % HatManager.Instance.allNamePlates.Count].ProdId);
         data.PlayerLevel = playerId;
 
-        data.RpcSetTasks(new Il2CppStructArray<byte>(0));
+        data.RpcSetTasks(new UnityStructArray<byte>(0));
     }
 }

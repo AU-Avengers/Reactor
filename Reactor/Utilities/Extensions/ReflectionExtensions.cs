@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
-using Il2CppInterop.Common;
-using Il2CppInterop.Common.Attributes;
-using Il2CppInterop.Runtime;
-using Il2CppSystem.Runtime.CompilerServices;
-using Il2CppCustomAttributeExtensions = Il2CppSystem.Reflection.CustomAttributeExtensions;
-using Il2CppMethodInfo = Il2CppSystem.Reflection.MethodInfo;
-using Il2CppSystemType = Il2CppSystem.Type;
+using UnityInterop.Common;
+using UnityInterop.Common.Attributes;
+using UnityInterop.Runtime;
+using UnitySystem.Runtime.CompilerServices;
+using UnityCustomAttributeExtensions = UnitySystem.Reflection.CustomAttributeExtensions;
+using UnityMethodInfo = UnitySystem.Reflection.MethodInfo;
+using UnitySystemType = UnitySystem.Type;
 using MethodInfo = System.Reflection.MethodInfo;
 
 namespace Reactor.Utilities.Extensions;
@@ -20,38 +20,38 @@ namespace Reactor.Utilities.Extensions;
 public static class ReflectionExtensions
 {
     /// <summary>
-    /// Gets a <see cref="Il2CppMethodInfo"/> for the specified <see cref="MethodInfo"/>.
+    /// Gets a <see cref="UnityMethodInfo"/> for the specified <see cref="MethodInfo"/>.
     /// </summary>
     /// <param name="methodInfo">The <see cref="MethodInfo"/>.</param>
-    /// <returns>A <see cref="Il2CppMethodInfo"/>.</returns>
-    public static Il2CppMethodInfo ToIl2CppMethodInfo(this MethodInfo methodInfo)
+    /// <returns>A <see cref="UnityMethodInfo"/>.</returns>
+    public static UnityMethodInfo ToUnityMethodInfo(this MethodInfo methodInfo)
     {
-        var il2CppMethodField = Il2CppInteropUtils.GetIl2CppMethodInfoPointerFieldForGeneratedMethod(methodInfo);
-        if (il2CppMethodField == null) throw new ArgumentException($"'{methodInfo.Name}' is not an il2cpp method", nameof(methodInfo));
-        var il2CppMethod = (IntPtr) il2CppMethodField.GetValue(null)!;
+        var UnityMethodField = UnityInteropUtils.GetUnityMethodInfoPointerFieldForGeneratedMethod(methodInfo);
+        if (UnityMethodField == null) throw new ArgumentException($"'{methodInfo.Name}' is not an Unity method", nameof(methodInfo));
+        var UnityMethod = (IntPtr) UnityMethodField.GetValue(null)!;
 
-        return new Il2CppMethodInfo(IL2CPP.il2cpp_method_get_object(il2CppMethod, IntPtr.Zero));
+        return new UnityMethodInfo(Unity.Unity_method_get_object(UnityMethod, IntPtr.Zero));
     }
 
     /// <summary>
-    /// Gets enumerator's MoveNext type for the specified <see cref="Il2CppMethodInfo"/>.
+    /// Gets enumerator's MoveNext type for the specified <see cref="UnityMethodInfo"/>.
     /// </summary>
-    /// <param name="methodInfo">The enumerator <see cref="Il2CppMethodInfo"/>.</param>
-    /// <returns>A <see cref="Il2CppSystemType"/> for enumerator's MoveNext type.</returns>
-    public static Il2CppSystemType GetEnumeratorMoveNextType(this Il2CppMethodInfo methodInfo)
+    /// <param name="methodInfo">The enumerator <see cref="UnityMethodInfo"/>.</param>
+    /// <returns>A <see cref="UnitySystemType"/> for enumerator's MoveNext type.</returns>
+    public static UnitySystemType GetEnumeratorMoveNextType(this UnityMethodInfo methodInfo)
     {
-        var customAttribute = Il2CppCustomAttributeExtensions.GetCustomAttribute(methodInfo, Il2CppType.Of<IteratorStateMachineAttribute>()).TryCast<IteratorStateMachineAttribute>();
+        var customAttribute = UnityCustomAttributeExtensions.GetCustomAttribute(methodInfo, UnityType.Of<IteratorStateMachineAttribute>()).TryCast<IteratorStateMachineAttribute>();
         if (customAttribute == null) throw new ArgumentException($"'{methodInfo.Name}' is not an enumerator method", nameof(methodInfo));
 
         return customAttribute._StateMachineType_k__BackingField;
     }
 
     /// <summary>
-    /// Gets a <see cref="Type"/> for the specified <see cref="Il2CppSystemType"/>.
+    /// Gets a <see cref="Type"/> for the specified <see cref="UnitySystemType"/>.
     /// </summary>
-    /// <param name="type">The <see cref="Il2CppSystemType"/>.</param>
+    /// <param name="type">The <see cref="UnitySystemType"/>.</param>
     /// <returns>A <see cref="Type"/>.</returns>
-    public static Type ToSystemType(this Il2CppSystemType type)
+    public static Type ToSystemType(this UnitySystemType type)
     {
         var result = Type.GetType(type.AssemblyQualifiedName);
         if (result != null) return result;
@@ -77,7 +77,7 @@ public static class ReflectionExtensions
     /// <returns>A <see cref="MethodInfo"/>.</returns>
     public static MethodInfo EnumeratorMoveNext(Type type, string methodName)
     {
-        return AccessTools.Method(AccessTools.Method(type, methodName).ToIl2CppMethodInfo().GetEnumeratorMoveNextType().ToSystemType(), "MoveNext");
+        return AccessTools.Method(AccessTools.Method(type, methodName).ToUnityMethodInfo().GetEnumeratorMoveNextType().ToSystemType(), "MoveNext");
     }
 
     /// <summary>

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using BepInEx.Unity.IL2CPP.Utils;
+using BepInEx.Unity.Mono.Utils;
 using Reactor.Utilities.Attributes;
 using UnityEngine;
 
@@ -13,7 +13,7 @@ namespace Reactor.Utilities;
 /// </summary>
 public static class Coroutines
 {
-    [RegisterInIl2Cpp]
+    [RegisterInUnity]
     internal sealed class Component : MonoBehaviour
     {
         internal static Component? Instance { get; set; }

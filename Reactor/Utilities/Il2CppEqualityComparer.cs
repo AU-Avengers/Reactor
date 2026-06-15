@@ -1,26 +1,26 @@
 using System.Collections.Generic;
-using Il2CppSystem.Runtime.CompilerServices;
+using UnitySystem.Runtime.CompilerServices;
 
 namespace Reactor.Utilities;
 
 /// <inheritdoc />
-public sealed class Il2CppEqualityComparer<T> : IEqualityComparer<T> where T : Il2CppSystem.Object
+public sealed class UnityEqualityComparer<T> : IEqualityComparer<T> where T : UnitySystem.Object
 {
-    private static Il2CppEqualityComparer<T>? _instance;
+    private static UnityEqualityComparer<T>? _instance;
 
     /// <summary>
     /// Gets the instance.
     /// </summary>
-    public static Il2CppEqualityComparer<T> Instance
+    public static UnityEqualityComparer<T> Instance
     {
         get
         {
-            _instance ??= new Il2CppEqualityComparer<T>();
+            _instance ??= new UnityEqualityComparer<T>();
             return _instance;
         }
     }
 
-    private Il2CppEqualityComparer()
+    private UnityEqualityComparer()
     {
     }
 

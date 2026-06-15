@@ -1,4 +1,4 @@
-using Il2CppInterop.Runtime;
+using UnityInterop.Runtime;
 using UnityEngine;
 
 namespace Reactor.Utilities.Extensions;
@@ -17,6 +17,6 @@ public static class AssetBundleExtensions
     /// <returns>The loaded asset or null if it wasn't found.</returns>
     public static T? LoadAsset<T>(this AssetBundle bundle, string name) where T : Object
     {
-        return bundle.LoadAsset(name, Il2CppType.Of<T>())?.Cast<T>();
+        return bundle.LoadAsset(name, UnityType.Of<T>())?.Cast<T>();
     }
 }

@@ -1,9 +1,8 @@
 using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppSystem.Reflection;
+using UnityInterop.Runtime;
+using UnitySystem.Reflection;
 using UnityEngine;
 
 namespace Reactor.Debugger.Patches;
@@ -13,11 +12,11 @@ internal static class GameOptionsPatches
 {
     public static void Initialize()
     {
-        var maxImpostors = (Il2CppStructArray<int>) Enumerable.Repeat((int) byte.MaxValue, byte.MaxValue).ToArray();
+        var maxImpostors = (UnityStructArray<int>) Enumerable.Repeat((int) byte.MaxValue, byte.MaxValue).ToArray();
         NormalGameOptionsV09.MaxImpostors = maxImpostors;
         NormalGameOptionsV09.MaxImpostors = maxImpostors;
 
-        var minPlayers = (Il2CppStructArray<int>) Enumerable.Repeat(1, byte.MaxValue).ToArray();
+        var minPlayers = (UnityStructArray<int>) Enumerable.Repeat(1, byte.MaxValue).ToArray();
         NormalGameOptionsV09.MinPlayers = minPlayers;
         NormalGameOptionsV09.MinPlayers = minPlayers;
     }
@@ -26,7 +25,7 @@ internal static class GameOptionsPatches
     [HarmonyPrefix]
     public static void UnlockAllOptions(GameSettingMenu __instance)
     {
-        __instance.GameSettingsTab.HideForOnline = new Il2CppReferenceArray<Transform>(0);
+        __instance.GameSettingsTab.HideForOnline = new UnityReferenceArray<Transform>(0);
     }
 
     [HarmonyPatch(typeof(NumberOption), nameof(NumberOption.SetUpFromData))]
@@ -40,11 +39,11 @@ internal static class GameOptionsPatches
     [HarmonyPatch(typeof(CreateOptionsPicker), nameof(CreateOptionsPicker.SetImpostorButtons))]
     public static class DisableImpostorCountReset
     {
-        private static readonly MethodInfo _refreshMethod = Il2CppType.Of<CreateOptionsPicker>().GetMethod("Refresh", BindingFlags.Public | BindingFlags.Instance);
+        private static readonly MethodInfo _refreshMethod = UnityType.Of<CreateOptionsPicker>().GetMethod("Refresh", BindingFlags.Public | BindingFlags.Instance);
 
         public static bool Prefix()
         {
-            foreach (var stackFrame in new Il2CppSystem.Diagnostics.StackTrace().GetFrames())
+            foreach (var stackFrame in new UnitySystem.Diagnostics.StackTrace().GetFrames())
             {
                 if (_refreshMethod.Equals(stackFrame.GetMethod()))
                 {

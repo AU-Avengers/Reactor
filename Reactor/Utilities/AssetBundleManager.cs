@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Reactor.Utilities.Extensions;
 using UnityEngine;
 
 namespace Reactor.Utilities;
@@ -91,7 +89,7 @@ public static class AssetBundleManager
             var filePath = Path.Combine(pluginDirectoryPath, fileName);
             if (File.Exists(filePath))
             {
-                Debug($"Loading an asset bundle from {filePath}");
+                ReactorPlugin.LogSource.LogDebug($"Loading an asset bundle from {filePath}");
                 path = filePath;
                 return true;
             }
@@ -101,17 +99,17 @@ public static class AssetBundleManager
         return false;
     }
 
-    private static bool TryLoadResource(Assembly assembly, string fileName, [NotNullWhen(true)] out Il2CppStructArray<byte>? data)
+    private static bool TryLoadResource(Assembly assembly, string fileName, [NotNullWhen(true)] out UnityStructArray<byte>? data)
     {
         var resourceName = assembly.GetManifestResourceNames().SingleOrDefault(n => n.EndsWith(fileName, StringComparison.Ordinal));
         if (resourceName != null)
         {
-            Debug($"Loading an asset bundle from {resourceName}");
+            ReactorPlugin.LogSource.LogDebug($"Loading an asset bundle from {resourceName}");
 
             using var stream = assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException("Resource stream was null");
 
             var length = (int) stream.Length;
-            data = new Il2CppStructArray<byte>(length);
+            data = new UnityStructArray<byte>(length);
             if (stream.Read(data.ToSpan()) < length) throw new IOException("Failed to read in full");
 
             return true;

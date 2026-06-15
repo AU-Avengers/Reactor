@@ -1,4 +1,4 @@
-using Il2CppInterop.Runtime.Attributes;
+using UnityInterop.Runtime.Attributes;
 using Reactor.Utilities.Attributes;
 using TMPro;
 using UnityEngine;
@@ -8,17 +8,17 @@ namespace Reactor.Utilities.UI;
 /// <summary>
 /// Wrapper over <see cref="GenericPopup"/> that adds hyperlink and controller support.
 /// </summary>
-[RegisterInIl2Cpp]
+[RegisterInUnity]
 internal sealed class ReactorPopup : MonoBehaviour
 {
-    private readonly Il2CppSystem.Collections.Generic.List<SelectableHyperLink> _selectableHyperLinks = new();
+    private readonly UnitySystem.Collections.Generic.List<SelectableHyperLink> _selectableHyperLinks = new();
 
     public GenericPopup Popup { get; private set; } = null!;
     public TextMeshPro TextArea { get; private set; } = null!;
     public PassiveButton BackButton { get; private set; } = null!;
     public SpriteRenderer Background { get; private set; } = null!;
 
-    [HideFromIl2Cpp]
+    
     public void Show(string text)
     {
         Popup.Show(text);
@@ -37,7 +37,7 @@ internal sealed class ReactorPopup : MonoBehaviour
         ControllerManager.Instance.CloseOverlayMenu(name);
     }
 
-    [HideFromIl2Cpp]
+    
     public static ReactorPopup Create(string name)
     {
         var genericPopup = Instantiate(DiscordManager.Instance.discordPopup, Camera.main!.transform);
