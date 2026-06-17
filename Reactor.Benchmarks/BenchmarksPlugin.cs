@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using BenchmarkDotNet.Running;
 using BepInEx;
-using BepInEx.Unity.Mono;
 
 namespace Reactor.Benchmarks;
 

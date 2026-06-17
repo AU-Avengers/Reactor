@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using BepInEx;
 using BepInEx.Bootstrap;
 using HarmonyLib;
+using UnityEngine;
 
 namespace Reactor.Utilities;
 
@@ -10,28 +14,17 @@ internal static class PluginLoadHooks
 {
     internal static event Action<PluginInfo, BaseUnityPlugin>? PluginLoaded;
 
-    internal static void Notify(BaseUnityPlugin plugin)
-    {
-        PluginLoaded?.Invoke(plugin.Info, plugin);
-    }
+    internal static void Notify(BaseUnityPlugin plugin) => PluginLoaded?.Invoke(plugin.Info, plugin);
 
     [HarmonyPatch]
-    private static class UnityChainloaderLoadPluginPatch
+    internal static class AddComponentPatch
     {
-        private static MethodBase TargetMethod()
+        [HarmonyPatch(typeof(GameObject), nameof(GameObject.AddComponent), typeof(Type))]
+        [HarmonyPostfix]
+        internal static void AddComponentPostfix(Component __result)
         {
-            return AccessTools.DeclaredMethod(
-                typeof(Chainloader),
-                "LoadPlugin",
-                new[] { typeof(PluginInfo), typeof(Assembly) });
-        }
-
-        private static void Postfix(BaseUnityPlugin __result)
-        {
-            if (__result != null)
-            {
-                Notify(__result);
-            }
+            if (__result is BaseUnityPlugin plugin)
+                Notify(plugin);
         }
     }
 }

@@ -40,17 +40,21 @@
         "resolved": "1.1.0",
         "contentHash": "/7Nmc1EA9lYlGBiyz6qPAaHvlcJHEjFZ1RFpGX+8EBj3GrgoX5kbpnZusuSHoOlLx0l+CnzKuQNE54B8UaGPyw=="
       },
-      "BepInEx.Unity.Mono": {
+      "BepInEx.Core": {
         "type": "Direct",
-        "requested": "[6.0.0-be.735, )",
-        "resolved": "6.0.0-be.735",
-        "contentHash": "ELuY5DMcxVvL+SDg9oaHnDdpZg+9oFEQsFW5TRNLcuiO0IOoEMaaTqxa+vijcrlWqQ3l8hg8yaHXgTVqSPuQLw==",
+        "requested": "[5.4.21, )",
+        "resolved": "5.4.21",
+        "contentHash": "NMUPlbHTTfJ+qIQCI90uIvjuUQ4wnwt4cpRsK3ItBh1DhsWFzAHXNiZjBxZkPysljEKQ2iu89sxMTga4bxBXVQ==",
         "dependencies": {
-          "BepInEx.Core": "6.0.0-be.735",
-          "HarmonyX": "2.10.2",
-          "Unity.InputSystem": "1.5.0",
-          "UnityEngine": "5.6.1"
+          "BepInEx.BaseLib": "5.4.20",
+          "HarmonyX": "2.7.0"
         }
+      },
+      "BepInEx.PluginInfoProps": {
+        "type": "Direct",
+        "requested": "[2.1.0, )",
+        "resolved": "2.1.0",
+        "contentHash": "VCG3QRiqNdW9ku2FEcNsbK+HKxrZmW0VxwMNyLNO7h0xGorU+C6vBHN8Qq4eAL5fU11Uks5x2uoYdqEoKD3P8A=="
       },
       "StyleCop.Analyzers": {
         "type": "Direct",
@@ -71,15 +75,10 @@
         "resolved": "0.4.3",
         "contentHash": "Z8Qs3JTTHZG1q0DCqY+HFJ8xp92tkEXWyQ7roeWgUvn20tjv0ZNfAdyy13XrRS1jeEoN/weJc81747TbvvwaDg=="
       },
-      "BepInEx.Core": {
+      "BepInEx.BaseLib": {
         "type": "Transitive",
-        "resolved": "6.0.0-be.735",
-        "contentHash": "FuHm9UCzjSKeiZJc3IF70Fiuqi+FynRn62PwBoOeZcHK3/qm+vl1YwbZyFlmUyf45g+UKxg2Td40iZGx88LVAQ==",
-        "dependencies": {
-          "HarmonyX": "2.10.2",
-          "MonoMod.Utils": "22.7.31.1",
-          "SemanticVersioning": "2.0.2"
-        }
+        "resolved": "5.4.20",
+        "contentHash": "0bXgYxbCEN2Ixp3kiFEhyw+RASeFQeg/ww+lbMt7if6XMeVS60eg6epNsMA8Jbx57dmNOzNevkKKw8mP8SUMqw=="
       },
       "CommandLineParser": {
         "type": "Transitive",
@@ -93,10 +92,10 @@
       },
       "HarmonyX": {
         "type": "Transitive",
-        "resolved": "2.10.2",
-        "contentHash": "/5WwkxXX8mPsRuigQt957rJGx1f0dDQxk+bvk4yYITKFjXas9Em+O71zEP8X0ym8OFQQ2XH/2SxS4NC7vEC+Xg==",
+        "resolved": "2.7.0",
+        "contentHash": "lec/SkduQspMa3Pi/nM/NSvA84Za8HCCWA8ybdToKiTqnBZa+JC5g6rxoFQCg/1vNuYcvjy77edePZzIEsRmvw==",
         "dependencies": {
-          "MonoMod.RuntimeDetour": "22.3.23.4",
+          "MonoMod.RuntimeDetour": "21.12.13.1",
           "System.Reflection.Emit": "4.7.0"
         }
       },
@@ -263,11 +262,11 @@
       },
       "MonoMod.RuntimeDetour": {
         "type": "Transitive",
-        "resolved": "22.3.23.4",
-        "contentHash": "2nwwFfwYDSgUzhi+1MutTg1gyUgXoMS4+E04vHOFp84Vxs0oBkkn4mGAfhkr272y0j3vqIBzo2aT9pXRlCd/ZA==",
+        "resolved": "21.12.13.1",
+        "contentHash": "65mB+bHjT6UCGCgO+/pYhpuGPf96rQ1Whwkut/x7cqVIW0DTndDFyWc/3bngzhnY/Y6IYtBMlXsU2ATq+CxpHg==",
         "dependencies": {
           "Mono.Cecil": "0.11.4",
-          "MonoMod.Utils": "22.3.23.4",
+          "MonoMod.Utils": "21.12.13.1",
           "System.Collections.NonGeneric": "4.3.0",
           "System.ComponentModel.TypeConverter": "4.3.0",
           "System.IO.FileSystem.Primitives": "4.3.0",
@@ -278,8 +277,8 @@
       },
       "MonoMod.Utils": {
         "type": "Transitive",
-        "resolved": "22.7.31.1",
-        "contentHash": "nI0E1oadXS1iMbfwfCzYF08C1jRQR9cnnHv66a4BSPd4sGu2p6g4BmctCWsdAB6oGKkSJUhcfHfxcfTsDyB94Q==",
+        "resolved": "21.12.13.1",
+        "contentHash": "/H+0RMWqx/D1/fSuY5jhY6GFvqhdYdlnI7J3IfL8P6y4nJkoZDxqts6+RxWWOz4pbnJdWnxSjS8XG+Lq6rUi7w==",
         "dependencies": {
           "Mono.Cecil": "0.11.4",
           "System.Collections.NonGeneric": "4.3.0",
@@ -297,11 +296,6 @@
         "dependencies": {
           "System.Memory": "4.5.3"
         }
-      },
-      "SemanticVersioning": {
-        "type": "Transitive",
-        "resolved": "2.0.2",
-        "contentHash": "4EQgYdNZ92SyaO7YFk6olVnebF5V+jrHyMUjvPq89tLeMo8NSfgDF+6Zwq/lgh9j/0yfQp9Lkm0ZA0rUATCZFA=="
       },
       "StyleCop.Analyzers.Unstable": {
         "type": "Transitive",
@@ -669,20 +663,11 @@
           "System.Runtime.CompilerServices.Unsafe": "4.5.3"
         }
       },
-      "Unity.InputSystem": {
-        "type": "Transitive",
-        "resolved": "1.5.0",
-        "contentHash": "wT/v12I32X+TlhPprHxQaw+LOkVkOPtdfVSJTurTtfN7V+d0cRaii2Nt5+oY8UhkKtHTExzMZB4dISjZQW70lA=="
-      },
-      "UnityEngine": {
-        "type": "Transitive",
-        "resolved": "5.6.1",
-        "contentHash": "uAhM+pBtZH7CvGCBQyT9CaksT9M4fzTCIMetYjOEocuFiQGF38uGgS8q5xUd1HddaeXwDG9VrMARHGz5IXhQLw=="
-      },
       "reactor": {
         "type": "Project",
         "dependencies": {
-          "BepInEx.Unity.Mono": "[6.0.0-be.735, )"
+          "BepInEx.Core": "[5.4.21, )",
+          "BepInEx.PluginInfoProps": "[2.1.0, )"
         }
       }
     }

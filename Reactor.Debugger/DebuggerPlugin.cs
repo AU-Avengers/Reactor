@@ -1,6 +1,5 @@
 global using static Reactor.Utilities.Logger<Reactor.Debugger.DebuggerPlugin>;
 using BepInEx;
-using BepInEx.Unity.Mono;
 using HarmonyLib;
 using Reactor.Debugger.AutoJoin;
 using Reactor.Debugger.Patches;

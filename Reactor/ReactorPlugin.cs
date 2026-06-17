@@ -1,10 +1,12 @@
 global using static Reactor.Utilities.Logger<Reactor.ReactorPlugin>;
 using System;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
+using QRCoder;
 using Reactor.Localization;
 using Reactor.Localization.Providers;
 using Reactor.Networking;
@@ -15,6 +17,7 @@ using Reactor.Patches.Miscellaneous;
 using Reactor.Utilities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using xCloud;
 
 namespace Reactor;
 
@@ -38,9 +41,10 @@ public partial class ReactorPlugin : BaseUnityPlugin
     public CustomRpcManager CustomRpcManager { get; } = new();
 
     internal RegionInfoWatcher RegionInfoWatcher { get; } = new();
+    internal static string BepInExVersion => typeof(Chainloader).Assembly.GetName().Version.ToString();
 
     /// <inheritdoc />
-    public ReactorPlugin()
+    private void Awake()
     {
         LogSource = Logger;
         Logger.LogMessage($"Among Us {Application.version} {Application.platform}");
@@ -53,15 +57,9 @@ public partial class ReactorPlugin : BaseUnityPlugin
         RegisterCustomRpcAttribute.Initialize();
         MessageConverterAttribute.Initialize();
         MethodRpcAttribute.Initialize();
-        PluginLoadHooks.Notify(this);
-
-        LocalizationManager.Register(new HardCodedLocalizationProvider());
-    }
-
-    internal void Awake()
-    {
         Harmony.PatchAll();
-
+        PluginLoadHooks.Notify(this);
+        LocalizationManager.Register(new HardCodedLocalizationProvider());
         ReactorConfig.Bind(Config);
 
         this.gameObject.AddComponent<ReactorComponent>().Plugin = this;
@@ -79,6 +77,14 @@ public partial class ReactorPlugin : BaseUnityPlugin
                 ModManager.Instance.ShowModStamp();
             }
         };
+    }
+
+    private void Start()
+    {
+        Harmony.Unpatch(
+            Harmony.GetPatchedMethods().First(method => method.DeclaringType == typeof(GameObject) && method.Name.Equals("AddComponent", StringComparison.Ordinal)),
+            AccessTools.Method(typeof(PluginLoadHooks.AddComponentPatch), nameof(PluginLoadHooks.AddComponentPatch.AddComponentPostfix))
+            );
     }
 
     internal void OnDestroy()

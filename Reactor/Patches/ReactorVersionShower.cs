@@ -96,7 +96,7 @@ public static class ReactorVersionShower
     {
         if (Text == null) return;
         Text.text = "Reactor " + Version.Parse(ReactorPlugin.Version);
-        // Text.text += "\nBepInEx " + ReactorPlugin.BepInExVersion.WithoutBuild();
+        Text.text += "\nBepInEx " + ReactorPlugin.BepInExVersion;
         Text.text += "\nMods: " + Chainloader.PluginInfos.Count;
 
         var creditsText = ReactorCredits.GetText(ReactorCredits.Location.MainMenu);

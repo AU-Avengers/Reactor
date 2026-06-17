@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Bootstrap;
 using Reactor.Patches;
@@ -101,7 +102,7 @@ public static class ReactorCredits
     /// <param name="shouldShow"><inheritdoc cref="Register(string,string,bool,System.Func{Location,bool})" path="/param[@name='shouldShow']"/></param>
     public static void Register<T>(Func<Location, bool>? shouldShow) where T : BaseUnityPlugin
     {
-        var pluginInfo = Chainloader.PluginInfos.Values.SingleOrDefault(p => p.Metadata.Name == typeof(T).FullName)
+        var pluginInfo = Chainloader.PluginInfos.Values.SingleOrDefault(p => p.Metadata.GUID == typeof(T).GetCustomAttribute<BepInPlugin>().GUID)
                          ?? throw new ArgumentException("Couldn't find the metadata for the provided plugin type", nameof(T));
 
         var metadata = pluginInfo.Metadata;
@@ -113,7 +114,6 @@ public static class ReactorCredits
     {
         var modTexts = _modIdentifiers.Where(m => m.ShouldShow(location)).Select(m => m.Text).ToArray();
         if (modTexts.Length == 0) return null;
-
         return location switch
         {
             Location.MainMenu => string.Join('\n', modTexts),
