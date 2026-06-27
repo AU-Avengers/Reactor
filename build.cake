@@ -7,6 +7,10 @@ var tag = workflow.RefType == GitHubActionsRefType.Tag ? workflow.RefName : null
 Task("Build")
     .Does(() =>
 {
+    Information("Cleaning up any existing packages.lock.json...");
+    var lockFiles = GetFiles("./**/packages.lock.json");
+    DeleteFiles(lockFiles);
+
     Information("Running dependency restoration...");
     DotNetRestore(new DotNetRestoreSettings {
         ArgumentCustomization = args => args.Append("--force-evaluate")
