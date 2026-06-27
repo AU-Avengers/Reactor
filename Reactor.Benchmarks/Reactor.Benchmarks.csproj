@@ -4,6 +4,10 @@
         <Authors>NuclearPowered</Authors>
         <EnableDynamicLoading>true</EnableDynamicLoading>
         <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+        <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+        <ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>true</ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <DisableUnmanagedBindingResolution>true</DisableUnmanagedBindingResolution>
     </PropertyGroup>
 
     <ItemGroup>

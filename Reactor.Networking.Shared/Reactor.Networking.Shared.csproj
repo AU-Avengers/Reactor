@@ -16,6 +16,10 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+        <ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>true</ResolveAssemblyReferenceIgnoreTargetFrameworkAttributeVersionMismatch>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <DisableUnmanagedBindingResolution>true</DisableUnmanagedBindingResolution>
     </PropertyGroup>
 
     <ItemGroup>

@@ -6,7 +6,7 @@
         "type": "Direct",
         "requested": "[2026.6.5, )",
         "resolved": "2026.6.5",
-        "contentHash": "S18Xc/D+m/BI9DPv1AN954ILDneOMCjgk2J9TGUGLwxofyzxlEL6lAKSLZfbqiJiwuyQftz4KHZNHbWT+75rAA==",
+        "contentHash": "aYykSHW4t9GM8LypiVxhpTaZcyQFxsGFF6aF8gnyfkTjAoM3JlIkK189UwOjCiqXQ13H/XN6qpsxNi/GOJm7XA==",
         "dependencies": {
           "BepInEx.AssemblyPublicizer.MSBuild": "0.4.3"
         }
