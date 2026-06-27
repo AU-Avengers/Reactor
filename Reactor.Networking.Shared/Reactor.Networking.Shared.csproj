@@ -12,7 +12,7 @@
         <IncludeBuildOutput>false</IncludeBuildOutput>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-        <NoBuild>true</NoBuild>
+        <NoBuild>false</NoBuild>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
