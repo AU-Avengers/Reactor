@@ -6,7 +6,8 @@
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
 
         <Version>2.5.1.1</Version>
 
