@@ -7,13 +7,19 @@ var tag = workflow.RefType == GitHubActionsRefType.Tag ? workflow.RefName : null
 Task("Build")
     .Does(() =>
 {
+    Information("Running dependency restoration...");
+    DotNetRestore(new DotNetRestoreSettings {
+        ArgumentCustomization = args => args.Append("--force-evaluate")
+    });
+
     var settings = new DotNetBuildSettings
     {
         Configuration = "Release",
+        NoRestore = true,
         MSBuildSettings = new DotNetMSBuildSettings()
     };
 
-    if (tag != null) 
+    if (tag != null)
     {
         settings.MSBuildSettings.Version = tag;
     }
