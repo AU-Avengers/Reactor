@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Bootstrap;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using QRCoder;
@@ -47,6 +48,12 @@ public partial class ReactorPlugin : BaseUnityPlugin
     private void Awake()
     {
         LogSource = Logger;
+
+        if (!EnsureManagerGameObjectIsHidden())
+        {
+            return;
+        }
+
         Logger.LogMessage($"Among Us {Application.version} {Application.platform}");
 
         PluginSingleton<ReactorPlugin>.Instance = this;
@@ -77,6 +84,33 @@ public partial class ReactorPlugin : BaseUnityPlugin
                 ModManager.Instance.ShowModStamp();
             }
         };
+    }
+
+    private bool EnsureManagerGameObjectIsHidden()
+    {
+        var coreConfig = (ConfigFile) typeof(ConfigFile)
+            .GetProperty("CoreConfig", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)!
+            .GetValue(null);
+
+        var hideManagerGameObject = coreConfig.Bind(
+            new ConfigDefinition("Chainloader", "HideManagerGameObject"),
+            false,
+            new ConfigDescription("Hide the BepInEx manager GameObject from Unity."));
+
+        if (hideManagerGameObject.Value)
+        {
+            return true;
+        }
+
+        hideManagerGameObject.Value = true;
+        coreConfig.Save();
+
+        Logger.LogWarning(
+            "Chainloader.HideManagerGameObject was false. Changed it to true and the game will now close. " +
+            "Please start the game again.");
+
+        Environment.Exit(1);
+        return false;
     }
 
     private void Start()
